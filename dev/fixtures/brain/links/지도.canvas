@@ -1,0 +1,8 @@
+{
+	"nodes":[
+		{"id":"a1","type":"file","file":"1-Projects/결제-설계/_workspace/ADR-003_재시도_정책.md","x":0,"y":0,"width":400,"height":300},
+		{"id":"a2","type":"file","file":"_workspace/결제 재시도 설계.md","x":500,"y":0,"width":400,"height":300},
+		{"id":"a3","type":"text","text":"\"file\": \"_workspace/회의록.md\" 는 글자일 뿐","x":0,"y":400,"width":400,"height":100}
+	],
+	"edges":[{"id":"e1","fromNode":"a1","toNode":"a2"}]
+}

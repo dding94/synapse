@@ -1,0 +1,26 @@
+# 허용 목록 방식: 아래에 적은 것만 저장소에 올라간다(새 파일·폴더는 기본으로 빠진다).
+/*
+!/.gitignore
+!/README.md
+!/LICENSE
+!/install.sh
+!/build.sh
+!/main.swift
+!/Info.plist
+!/Synapse.icns
+!/Synapse.iconset/
+!/make-icon.swift
+!/Library/
+!/src/
+!/tools/
+!/dev/
+!/packaging/
+
+# 허용한 폴더 안에서도 빼는 것
+.DS_Store
+__pycache__/
+*.pyc
+build/
+dist/
+# 개인 실제 자료에 기대는 시험
+dev/ui-test/v07-contract.js

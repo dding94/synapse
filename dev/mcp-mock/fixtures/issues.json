@@ -1,0 +1,63 @@
+[
+  {
+    "id": "10150", "key": "PAY-150",
+    "fields": {
+      "summary": "부분 환불 정산 반영",
+      "description": "부분 환불 금액을 **다음 정산**에서 차감한다.\n\n- 대상: 카드 결제\n- 참고: [환불 예외 처리](https://payteam-mock.atlassian.net/wiki/spaces/PAY/pages/102)",
+      "labels": ["환불", "정산"],
+      "issuelinks": [{"id": "9001", "type": {"name": "Relates", "outward": "relates to"}, "outwardIssue": {"key": "PAY-142", "fields": {"summary": "환불 예외 자동 승인"}}}],
+      "parent": {"key": "PAY-100", "fields": {"summary": "정산 개선"}},
+      "project": {"key": "PAY", "name": "결제"},
+      "status": {"name": "진행 중", "statusCategory": {"key": "indeterminate"}}, "issuetype": {"name": "작업"},
+      "priority": {"name": "High"}, "duedate": "2026-10-28", "assignee": {"accountId": "712020:mock-cheolsu", "displayName": "김철수"},
+      "created": "2026-09-01T10:00:00.000+0900", "updated": "2026-10-19T16:30:00.000+0900", "statuscategorychangedate": "2026-10-15T09:00:00.000+0900",
+      "comment": {"comments": [
+        {"id": "1", "author": {"displayName": "이영희"}, "body": "정산팀 검토 완료했어요.", "created": "2026-10-18T10:00:00.000+0900"},
+        {"id": "2", "author": {"displayName": "김철수"}, "body": "**배포는** 다음 주 화요일.", "created": "2026-10-19T16:30:00.000+0900"}
+      ]}
+    }
+  },
+  {
+    "id": "10142", "key": "PAY-142",
+    "fields": {
+      "summary": "환불 예외 자동 승인",
+      "description": "환불 예외 건 중 1만 원 이하는 자동 승인한다.",
+      "labels": ["환불"],
+      "issuelinks": [{"id": "9001", "type": {"name": "Relates", "inward": "relates to"}, "inwardIssue": {"key": "PAY-150", "fields": {"summary": "부분 환불 정산 반영"}}}],
+      "parent": {"key": "PAY-100"},
+      "project": {"key": "PAY", "name": "결제"},
+      "status": {"name": "완료", "statusCategory": {"key": "done"}}, "issuetype": {"name": "작업"},
+      "priority": {"name": "Medium"}, "assignee": {"accountId": "712020:mock-other", "displayName": "이영희"},
+      "created": "2026-08-20T09:00:00.000+0900", "updated": "2026-10-17T11:00:00.000+0900",
+      "comment": {"comments": [{"id": "3", "author": {"displayName": "박민수"}, "body": "규칙 문서 업데이트함", "created": "2026-10-17T11:00:00.000+0900"}]}
+    }
+  },
+  {
+    "id": "10120", "key": "PAY-120",
+    "fields": {
+      "summary": "수수료 계산 오류 수정",
+      "description": "가맹점 등급별 수수료가 *반올림* 되지 않는 문제.",
+      "labels": [],
+      "issuelinks": [],
+      "project": {"key": "PAY", "name": "결제"},
+      "status": {"name": "해야 할 일", "statusCategory": {"key": "new"}}, "issuetype": {"name": "버그"},
+      "priority": {"name": "Highest"}, "duedate": "2026-10-25", "assignee": {"accountId": "712020:mock-cheolsu", "displayName": "김철수"},
+      "created": "2026-07-01T09:00:00.000+0900", "updated": "2026-10-12T09:00:00.000+0900",
+      "comment": {"comments": []}
+    }
+  },
+  {
+    "id": "10100", "key": "PAY-100",
+    "fields": {
+      "summary": "정산 개선",
+      "description": null,
+      "labels": ["에픽"],
+      "issuelinks": [],
+      "project": {"key": "PAY", "name": "결제"},
+      "status": {"name": "진행 중", "statusCategory": {"key": "indeterminate"}}, "issuetype": {"name": "에픽"},
+      "priority": {"name": "Medium"},
+      "created": "2026-06-01T09:00:00.000+0900", "updated": "2026-10-01T09:00:00.000+0900",
+      "comment": {"comments": []}
+    }
+  }
+]

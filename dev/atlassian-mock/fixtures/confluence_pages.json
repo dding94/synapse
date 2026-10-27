@@ -1,0 +1,250 @@
+[
+ {
+  "id": "101",
+  "type": "page",
+  "status": "current",
+  "title": "정산 프로세스",
+  "space": {
+   "key": "PAY",
+   "name": "정산 팀"
+  },
+  "ancestors": [],
+  "body": {
+   "storage": {
+    "value": "<h2>개요</h2><p>매월 말 <strong>정산</strong> 배치가 돌고, 가맹점별 정산서를 만든다.</p><ul><li>1일차: 거래 집계</li><li>2일차: 수수료 계산 &amp; 검수</li></ul><p>예외 건은 <ac:link><ri:page ri:content-title=\"환불 예외 처리\" /></ac:link> 문서를 따른다.</p><ac:structured-macro ac:name=\"info\"><ac:parameter ac:name=\"title\">주의</ac:parameter><ac:rich-text-body><p>마감일에는 배포하지 않는다.</p></ac:rich-text-body></ac:structured-macro>",
+    "representation": "storage"
+   }
+  },
+  "version": {
+   "number": 7,
+   "when": "2026-10-18T11:20:05.000+0900"
+  },
+  "history": {
+   "createdDate": "2026-03-02T10:00:00.000+0900"
+  },
+  "metadata": {
+   "labels": {
+    "results": [
+     {
+      "name": "정산",
+      "prefix": "global"
+     },
+     {
+      "name": "환불",
+      "prefix": "global"
+     }
+    ]
+   }
+  },
+  "_links": {
+   "webui": "/spaces/PAY/pages/101/정산+프로세스"
+  }
+ },
+ {
+  "id": "102",
+  "type": "page",
+  "status": "current",
+  "title": "환불 예외 처리",
+  "space": {
+   "key": "PAY",
+   "name": "정산 팀"
+  },
+  "ancestors": [
+   {
+    "id": "101",
+    "title": "정산 프로세스",
+    "type": "page"
+   }
+  ],
+  "body": {
+   "storage": {
+    "value": "<p>정산 이후 들어온 환불은 다음 달 정산에서 차감한다. 자세한 흐름은 <ac:link><ri:page ri:content-title=\"정산 프로세스\" /><ac:plain-text-link-body><![CDATA[정산 프로세스]]></ac:plain-text-link-body></ac:link>를 본다.</p><p>부분 환불&nbsp;건은 수동 검수한다.</p>",
+    "representation": "storage"
+   }
+  },
+  "version": {
+   "number": 3,
+   "when": "2026-10-19T16:45:10.000+0900"
+  },
+  "history": {
+   "createdDate": "2026-04-11T09:30:00.000+0900"
+  },
+  "metadata": {
+   "labels": {
+    "results": [
+     {
+      "name": "환불",
+      "prefix": "global"
+     },
+     {
+      "name": "정산",
+      "prefix": "global"
+     }
+    ]
+   }
+  },
+  "_links": {
+   "webui": "/spaces/PAY/pages/102/환불+예외+처리"
+  }
+ },
+ {
+  "id": "103",
+  "type": "page",
+  "status": "current",
+  "title": "정산 대시보드 요구사항",
+  "space": {
+   "key": "PAY",
+   "name": "정산 팀"
+  },
+  "ancestors": [
+   {
+    "id": "101",
+    "title": "정산 프로세스",
+    "type": "page"
+   }
+  ],
+  "body": {
+   "storage": {
+    "value": "<table><tbody><tr><th>지표</th><th>설명</th></tr><tr><td>정산 지연 건수</td><td>마감 후 미처리</td></tr><tr><td>환불 비율</td><td>월별 추이</td></tr></tbody></table>",
+    "representation": "storage"
+   }
+  },
+  "version": {
+   "number": 2,
+   "when": "2026-10-12T08:00:00.000+0900"
+  },
+  "history": {
+   "createdDate": "2026-09-30T13:10:00.000+0900"
+  },
+  "metadata": {
+   "labels": {
+    "results": [
+     {
+      "name": "대시보드",
+      "prefix": "global"
+     }
+    ]
+   }
+  },
+  "_links": {
+   "webui": "/spaces/PAY/pages/103/정산+대시보드+요구사항"
+  }
+ },
+ {
+  "id": "104",
+  "type": "page",
+  "status": "current",
+  "title": "월 마감 체크리스트",
+  "space": {
+   "key": "PAY",
+   "name": "정산 팀"
+  },
+  "ancestors": [],
+  "body": {
+   "storage": {
+    "value": "<p>마감 전 확인:</p><ol><li>미처리 환불 0건</li><li>수수료율 변경 반영</li></ol>",
+    "representation": "storage"
+   }
+  },
+  "version": {
+   "number": 12,
+   "when": "2026-09-30T18:00:00.000+0900"
+  },
+  "history": {
+   "createdDate": "2025-12-01T10:00:00.000+0900"
+  },
+  "metadata": {
+   "labels": {
+    "results": [
+     {
+      "name": "체크리스트",
+      "prefix": "global"
+     }
+    ]
+   }
+  },
+  "_links": {
+   "webui": "/spaces/PAY/pages/104/월+마감+체크리스트"
+  }
+ },
+ {
+  "id": "105",
+  "type": "page",
+  "status": "current",
+  "title": "PG사 연동 가이드",
+  "space": {
+   "key": "PAY",
+   "name": "정산 팀"
+  },
+  "ancestors": [],
+  "body": {
+   "storage": {
+    "value": "<p>콜백 검증 예시:</p><ac:structured-macro ac:name=\"code\"><ac:parameter ac:name=\"language\">python</ac:parameter><ac:plain-text-body><![CDATA[if sig != hmac(secret, body): reject()  # a < b]]></ac:plain-text-body></ac:structured-macro>",
+    "representation": "storage"
+   }
+  },
+  "version": {
+   "number": 4,
+   "when": "2026-08-21T15:30:00.000+0900"
+  },
+  "history": {
+   "createdDate": "2026-08-01T10:00:00.000+0900"
+  },
+  "metadata": {
+   "labels": {
+    "results": [
+     {
+      "name": "연동",
+      "prefix": "global"
+     }
+    ]
+   }
+  },
+  "_links": {
+   "webui": "/spaces/PAY/pages/105/PG사+연동+가이드"
+  }
+ },
+ {
+  "id": "106",
+  "type": "page",
+  "status": "current",
+  "title": "정산 용어집",
+  "space": {
+   "key": "PAY",
+   "name": "정산 팀"
+  },
+  "ancestors": [
+   {
+    "id": "104",
+    "title": "월 마감 체크리스트",
+    "type": "page"
+   }
+  ],
+  "body": {
+   "storage": {
+    "value": "<p>정산 = 가맹점에 대금을 지급하는 일. 환불 = 결제 취소 후 돈을 돌려주는 일.</p>",
+    "representation": "storage"
+   }
+  },
+  "version": {
+   "number": 1,
+   "when": "2026-07-05T09:00:00+0900"
+  },
+  "history": {
+   "createdDate": "2026-07-05T09:00:00.000+0900"
+  },
+  "metadata": {
+   "labels": {
+    "results": [
+     {
+      "name": "용어",
+      "prefix": "global"
+     }
+    ]
+   }
+  },
+  "_links": {
+   "webui": "/spaces/PAY/pages/106/정산+용어집"
+  }
+ }
+]

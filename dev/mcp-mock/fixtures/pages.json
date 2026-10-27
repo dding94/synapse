@@ -1,0 +1,26 @@
+[
+  {
+    "id": "101", "title": "정산 프로세스", "spaceKey": "PAY", "parentId": null,
+    "version": 7, "updated": "2026-10-18T02:20:05.000Z", "createdAt": "2026-03-02T01:00:00.000Z",
+    "labels": ["정산", "환불"],
+    "body": "## 개요\n\n매월 말 **정산** 배치가 돌고, 가맹점별 정산서를 만든다.\n\n- 1일차: 거래 집계\n- 2일차: 수수료 계산 &amp; 검수\n\n예외 건은 [환불 예외 처리](https://payteam-mock.atlassian.net/wiki/spaces/PAY/pages/102/%ED%99%98%EB%B6%88) 문서를 따른다.\n\n> 주의: 마감일에는 배포하지 않는다.\n\n관련 이슈: PAY-142"
+  },
+  {
+    "id": "102", "title": "환불 예외 처리", "spaceKey": "PAY", "parentId": "101",
+    "version": 3, "updated": "2026-10-15T05:00:00.000Z", "createdAt": "2026-04-01T00:30:00.000Z",
+    "labels": ["환불"],
+    "body": "상위 문서: [정산 프로세스](https://payteam-mock.atlassian.net/wiki/spaces/PAY/pages/101/%EC%A0%95%EC%82%B0)\n\n### 예외 기준\n\n| 구분 | 처리 |\n|---|---|\n| 부분 환불 | 다음 정산에서 차감 |\n| 전액 환불 | 즉시 취소 |\n\n자동 승인 작업은 [PAY-142](https://payteam-mock.atlassian.net/browse/PAY-142)에서 진행한다.\n\n![흐름도](https://payteam-mock.atlassian.net/wiki/download/flow.png)"
+  },
+  {
+    "id": "103", "title": "월말 정산 체크리스트", "spaceKey": "PAY", "parentId": "101",
+    "version": 12, "updated": "2026-10-10T09:00:00.000Z", "createdAt": "2026-02-10T02:00:00.000Z",
+    "labels": ["체크리스트"],
+    "body": "- [x] 거래 집계 확인\n- [ ] 수수료 *검수*\n- [ ] 정산서 발송\n\n`settle-batch` 실행 결과를 꼭 확인한다."
+  },
+  {
+    "id": "104", "title": "결제 장애 대응", "spaceKey": "PAY", "parentId": null,
+    "version": 2, "updated": "2026-10-05T03:00:00.000Z", "createdAt": "2026-05-20T03:00:00.000Z",
+    "labels": [],
+    "body": "# 결제 장애 대응\n\n장애가 나면 ~~바로~~ 먼저 공지한다.\n\n```\nkubectl rollout restart deploy/pay\n```\n\n최근 장애: [PAY-150](https://payteam-mock.atlassian.net/browse/PAY-150)"
+  }
+]

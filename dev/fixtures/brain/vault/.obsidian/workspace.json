@@ -1,0 +1,11 @@
+{
+  "main": {"id": "m1", "type": "split", "children": []},
+  "active": "m1",
+  "lastOpenFiles": [
+    "2-Areas/결제/운영/장애 대응.md",
+    "1-Projects/결제-설계/PROGRESS.md",
+    "2026-10-20.md",
+    "2-Areas/결제/프로젝트_요약.md",
+    "3-Resources/Redis/Redis 기본.md"
+  ]
+}

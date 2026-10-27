@@ -1,0 +1,79 @@
+/* v0.6 새 노트 창(⌘N) · [[ 자동완성 · 리더 아래 열기 줄 */
+.nn-scrim {
+  position: fixed; inset: 0; z-index: 70; display: flex; align-items: flex-start; justify-content: center; padding-top: 18vh;
+  background: var(--scrim);
+}
+.nn-scrim[hidden] { display: none; }
+.nn-card {
+  width: min(420px, calc(100vw - 32px)); padding: 14px 16px 14px; border-radius: 12px;
+  background: var(--surface-raised); border: 1px solid var(--border-strong); box-shadow: var(--shadow-pop);
+  display: flex; flex-direction: column; gap: 10px; position: relative;
+}
+.nn-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.nn-head h2 { margin: 0; font-size: 15px; font-weight: 650; letter-spacing: -0.012em; color: var(--text-1); }
+.nn-notice { margin: 0; padding: 7px 10px; border-radius: 8px; background: var(--accent-soft); color: var(--accent-text); font-size: var(--fs-sm); line-height: 1.5; }
+.nn-field { display: flex; flex-direction: column; gap: 4px; position: relative; }
+.nn-lab { font-size: var(--fs-xs); font-weight: 600; color: var(--text-3); letter-spacing: .01em; }
+.nn-title, .nn-folder {
+  width: 100%; height: 34px; padding: 0 10px; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--surface-1);
+  color: var(--text-1); font-size: var(--fs-lg); outline: none; -webkit-user-select: text; user-select: text; cursor: text;
+}
+.nn-title:focus, .nn-folder:focus { border-color: var(--accent-ring); background: var(--surface-2); }
+.nn-title::placeholder, .nn-folder::placeholder { color: var(--text-3); }
+.nn-loc { position: relative; }
+.nn-list {
+  position: absolute; left: 0; right: 0; top: calc(100% + 4px); z-index: 2; max-height: 200px; overflow-y: auto; padding: 4px;
+  border-radius: 9px; background: var(--surface-raised); border: 1px solid var(--border-strong); box-shadow: var(--shadow-pop); scrollbar-width: thin;
+}
+.nn-list[hidden] { display: none; }
+.nn-opt { display: flex; align-items: baseline; gap: 8px; padding: 5px 8px; border-radius: 6px; font-size: var(--fs-md); cursor: default; }
+.nn-opt:hover, .nn-opt.is-sel { background: var(--accent-soft); }
+.nn-opt-t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-1); }
+.nn-opt-n { flex: none; font-size: var(--fs-xs); color: var(--text-3); }
+.nn-path {
+  font-size: var(--fs-sm); color: var(--text-3); font-family: var(--font-mono); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  padding: 0 2px;
+}
+.nn-error { margin: 0; font-size: var(--fs-sm); color: var(--danger); line-height: 1.5; }
+.nn-error[hidden], .nn-notice[hidden] { display: none; }
+.nn-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 2px; }
+.nn-actions .btn kbd { margin-left: 8px; font-size: var(--fs-xs); opacity: .8; }
+
+/* [[ 자동완성 목록 */
+.ac-pop {
+  position: fixed; z-index: 80; max-height: 240px; overflow-y: auto; padding: 4px; border-radius: 10px; scrollbar-width: thin;
+  background: var(--surface-raised); border: 1px solid var(--border-strong); box-shadow: var(--shadow-pop);
+}
+.ac-pop[hidden] { display: none; }
+.ac-row { display: flex; flex-direction: column; gap: 1px; padding: 5px 9px; border-radius: 6px; cursor: default; }
+.ac-row:hover, .ac-row.is-sel { background: var(--accent-soft); }
+.ac-t { font-size: var(--fs-md); color: var(--text-1); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ac-p { font-size: var(--fs-xs); color: var(--text-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ac-none { padding: 7px 10px; font-size: var(--fs-sm); color: var(--text-3); }
+
+/* 리더 아래 열기 줄: 편집 가능한 로컬 문서면 "편집 ⌘E"가 크게, 열기·Finder·⋯는 작게 */
+.edit-big {
+  flex: 1 1 auto; min-width: 0; display: flex; align-items: center; justify-content: center; gap: 8px;
+  height: 34px; padding: 0 12px; border-radius: var(--radius-control);
+  background: var(--accent-soft); color: var(--accent-text); border: 1px solid transparent; font-size: var(--fs-md); font-weight: 600;
+  transition: border-color 120ms var(--ease-out), background-color 120ms var(--ease-out);
+}
+.edit-big[hidden] { display: none; }
+.edit-big:hover { border-color: var(--accent-ring); }
+.edit-big:active { transform: translateY(.5px); }
+.edit-big { white-space: nowrap; min-width: 96px; }
+.edit-big > span { white-space: nowrap; }
+.edit-big .icon { width: 15px; height: 15px; flex: none; }
+.edit-big kbd { flex: none; font-size: var(--fs-xs); line-height: 16px; padding: 0 5px; border-radius: 4px; font-weight: 500; color: var(--accent-text); background: var(--accent-soft); opacity: .9; }
+.edit-big.is-busy { opacity: .6; }
+.open-row.has-edit .open-btn {
+  flex: none; background: none; color: var(--text-2); border-color: var(--border-strong); font-weight: 500; padding: 0 10px; gap: 6px;
+}
+.open-row.has-edit .open-btn:hover { background: var(--surface-2); color: var(--text-1); border-color: var(--border-strong); }
+.open-row.has-edit .open-btn > span { display: none; }
+.open-row.has-edit .open-btn kbd { display: none; }
+/* 좁은 리더에서는 열기·Finder는 아이콘만(설명은 툴팁). 읽기 모드처럼 넓을 때만 글자를 보인다. */
+.open-row.has-edit .reveal-btn .reveal-label, .open-row.has-edit .reveal-btn kbd { display: none; }
+.open-row.has-edit .reveal-btn { padding: 0 8px; }
+.main.reading .open-row.has-edit .open-btn > span, .main.reading .open-row.has-edit .reveal-btn .reveal-label { display: inline; }
+.main.reading .edit-big { flex: none; padding: 0 16px; }

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDisplayName</key>
+	<string>Synapse</string>
+	<key>CFBundleExecutable</key>
+	<string>Synapse</string>
+	<key>CFBundleIconFile</key>
+	<string>Synapse</string>
+	<key>CFBundleIdentifier</key>
+	<string>local.codex.synapse.preview</string>
+	<key>CFBundleName</key>
+	<string>Synapse</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.9.0</string>
+	<key>CFBundleVersion</key>
+	<string>9</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>14.0</string>
+	<key>LSUIElement</key>
+	<true/>
+	<key>NSDesktopFolderUsageDescription</key>
+	<string>Synapse가 연결한 폴더의 문서를 읽어 이 Mac 안에서만 색인하고 검색하기 위해 데스크탑 폴더에 접근합니다.</string>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>Synapse가 연결한 폴더의 문서를 읽어 이 Mac 안에서만 색인하고 검색하기 위해 문서 폴더에 접근합니다.</string>
+	<key>NSDownloadsFolderUsageDescription</key>
+	<string>Synapse가 연결한 폴더의 문서를 읽어 이 Mac 안에서만 색인하고 검색하기 위해 다운로드 폴더에 접근합니다.</string>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
+</dict>
+</plist>

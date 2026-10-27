@@ -1,0 +1,36 @@
+/* trash.css — v0.6 T: 정리함의 삭제 제안 카드 · 휴지통 구역 · 사서 설정의 바로 실행 스위치 (COMMON §3 C3·C4) */
+
+/* 삭제 제안 카드: 빨간 표시 */
+.bq-card.is-del .bq-ico { color: var(--danger); }
+.bq-card.is-del.is-sel::before { background: var(--danger); }
+.bq-card.is-del .bq-sub { color: var(--danger); }
+.bq-path.is-del { border-color: var(--danger-soft); }
+.bq-dest.is-del { color: var(--danger); }
+
+/* 휴지통 구역 */
+.bq-trash { margin: 14px 0 0; border-top: 1px solid var(--border); padding-top: 8px; }
+.bq-trash[hidden] { display: none; }
+.bq-trash-h { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 30px; padding: 4px 10px; border-radius: 8px; text-align: left; color: var(--text-2); }
+.bq-trash-h:hover { background: var(--surface-2); }
+.bq-trash-h .icon { width: 15px; height: 15px; color: var(--text-3); }
+.bq-trash-t { flex: 1; min-width: 0; font-size: var(--fs-sm); }
+.bq-trash-t b { font-weight: 600; color: var(--text-1); }
+.bq-trash-c { flex: none; font-size: var(--fs-xs); color: var(--text-3); }
+.bq-trash-empty { margin: 6px 10px; font-size: var(--fs-xs); color: var(--text-3); word-break: keep-all; }
+.bq-trash-list { margin: 4px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 4px; }
+.bq-trash-i { display: flex; flex-direction: column; gap: 6px; padding: 8px 10px; border-radius: 8px; background: var(--surface-1); border: 1px solid var(--border); }
+.bq-trash-i.is-busy { opacity: .6; pointer-events: none; }
+.bq-trash-m { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.bq-trash-n { font-size: var(--fs-sm); font-weight: 600; color: var(--text-1); overflow-wrap: anywhere; }
+.bq-trash-p { font-family: var(--font-mono); font-size: var(--fs-xs); color: var(--text-3); overflow-wrap: anywhere; }
+.bq-trash-s { font-size: var(--fs-xs); color: var(--text-3); line-height: 1.5; word-break: keep-all; }
+.bq-trash-b { display: flex; flex-wrap: wrap; gap: 6px; }
+.bq-trash .btn.ghost { background: var(--surface-2); border-color: var(--border); color: var(--text-2); }
+.bq-trash .btn.ghost:hover { color: var(--danger); background: var(--danger-soft); border-color: var(--danger-soft); }
+.bq-trash-ask { justify-content: flex-end; }
+.bq-trash-ask { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 8px 10px; border-radius: 8px; background: var(--danger-soft); font-size: var(--fs-xs); line-height: 1.5; color: var(--text-1); word-break: keep-all; }
+.bq-trash-ask span { flex: 1 1 100%; }
+
+/* AI 기록 아이콘 */
+.bp-ic[data-k="trash"], .bp-ic[data-k="purge"] { color: var(--danger); }
+.bp-ic[data-k="restore"] { color: var(--accent-text); }

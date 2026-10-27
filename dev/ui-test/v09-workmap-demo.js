@@ -1,0 +1,34 @@
+// v0.9 작업 지도·정리 계획 — 예시 자료(출처 없는 상태 → "예시 자료로 둘러보기")로 동작하는지, 콘솔 오류가 0인지 확인 (E3).
+// 사용: 빈 폴더를 --home 으로: dev/ui-test/run.sh --app <Synapse.app> --home <빈 폴더> --script dev/ui-test/v09-workmap-demo.js --out <결과 폴더>
+const R = {};
+const ok = (k, v, info) => { R[k] = { ok: !!v, info: info === undefined ? null : info }; };
+const errs = [];
+const oe = console.error.bind(console), ow = console.warn.bind(console);
+console.error = (...a) => { errs.push('E ' + a.map(String).join(' ')); oe(...a); };
+console.warn = (...a) => { const s = a.map(String).join(' '); if (/\[synapse\]/.test(s)) errs.push('W ' + s); ow(...a); };
+window.__MOCK_REVIEW = true;
+await until(() => $('[data-act="demo"]'), 30000);
+click($('[data-act="demo"]'));
+await until(() => dbg().brain.on, 15000);
+await idle(); await sleep(1500);
+ok('예시 자료 사서', dbg().brain.on, dbg().source.active);
+ok('홈 정리 한 줄', !!$('.td-line'), text('.td-line'));
+ok('홈 리뷰 카드', !!$('.td-review'), text('.td-review'));
+await snap('d-home');
+key('2', { meta: true }, $('#search'));
+await until(() => $('.wm-row'), 15000); await idle(); await sleep(800);
+ok('작업 지도 줄', $$('.wm-row').length > 10, $$('.wm-row').length);
+await snap('d-workmap');
+key('p', {}, $('.wm-scroll'));
+await until(() => $('.wm-plan:not([hidden]) .wm-pc'), 8000); await sleep(2200);
+ok('정리 계획 카드', $$('.wm-pc').length === 13 - 1 || $$('.wm-pc').length > 8, $$('.wm-pc').length);
+key('y', {}, $('.wm-plan')); await sleep(900);
+key('z', { meta: true, alt: true }, $('.wm-plan')); await sleep(900);
+ok('승인·되돌리기', /되돌렸어요/.test(($('#toast') || {}).innerText || ''), ($('#toast') || {}).innerText);
+await snap('d-plan');
+key('Escape', {}, $('.wm-plan')); await sleep(300);
+key('3', { meta: true }, $('#search')); await until(() => $('.bq-card'), 8000); await sleep(600);
+ok('정리함 tidy 카드', $$('.bq-card.k-tidy').length > 0, $$('.bq-card.k-tidy').length);
+ok('console 오류 0', errs.length === 0, errs.slice(0, 10));
+const failed = Object.entries(R).filter(([, v]) => !v.ok).map(([k]) => k);
+return { failed, R };

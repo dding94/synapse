@@ -1,0 +1,321 @@
+[
+ {
+  "id": "10142",
+  "key": "PAY-142",
+  "fields": {
+   "summary": "정산 지연 알림 추가",
+   "description": {
+    "type": "doc",
+    "version": 1,
+    "content": [
+     {
+      "type": "paragraph",
+      "content": [
+       {
+        "type": "text",
+        "text": "정산 대시보드에 지연 건수 위젯을 붙인다. "
+       },
+       {
+        "type": "text",
+        "text": "마감일",
+        "marks": [
+         {
+          "type": "strong"
+         }
+        ]
+       },
+       {
+        "type": "text",
+        "text": " 이후 미처리 건을 보여 준다."
+       }
+      ]
+     },
+     {
+      "type": "bulletList",
+      "content": [
+       {
+        "type": "listItem",
+        "content": [
+         {
+          "type": "paragraph",
+          "content": [
+           {
+            "type": "text",
+            "text": "지연 기준: 마감 +1일"
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "type": "listItem",
+        "content": [
+         {
+          "type": "paragraph",
+          "content": [
+           {
+            "type": "text",
+            "text": "환불 건은 제외"
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   },
+   "labels": [
+    "정산",
+    "대시보드"
+   ],
+   "status": {
+    "name": "진행 중",
+    "statusCategory": {
+     "key": "indeterminate",
+     "name": "진행 중"
+    }
+   },
+   "issuetype": {
+    "name": "작업"
+   },
+   "project": {
+    "key": "PAY",
+    "name": "정산"
+   },
+   "created": "2026-09-01T10:00:00.000+0900",
+   "updated": "2026-10-20T09:15:42.123+0900",
+   "issuelinks": [],
+   "comment": {
+    "comments": [
+     {
+      "author": {
+       "displayName": "김영희"
+      },
+      "body": {
+       "type": "doc",
+       "version": 1,
+       "content": [
+        {
+         "type": "paragraph",
+         "content": [
+          {
+           "type": "text",
+           "text": "위젯 시안 공유드려요. 환불 제외 기준 확인 부탁해요."
+          }
+         ]
+        }
+       ]
+      },
+      "created": "2026-10-19T14:00:00.000+0900"
+     }
+    ],
+    "total": 1
+   },
+   "priority": {
+    "name": "High"
+   },
+   "duedate": "2026-10-30",
+   "assignee": {
+    "accountId": "mock-1",
+    "displayName": "김철수"
+   },
+   "statuscategorychangedate": "2026-10-12T09:30:00.000+0900"
+  }
+ },
+ {
+  "id": "10150",
+  "key": "PAY-150",
+  "fields": {
+   "summary": "환불 수수료 계산 오류 수정",
+   "description": {
+    "type": "doc",
+    "version": 1,
+    "content": [
+     {
+      "type": "paragraph",
+      "content": [
+       {
+        "type": "text",
+        "text": "부분 환불 시 수수료가 이중으로 차감된다. PAY-142 작업과 같은 배치를 건드린다."
+       }
+      ]
+     }
+    ]
+   },
+   "labels": [
+    "환불",
+    "버그"
+   ],
+   "status": {
+    "name": "할 일",
+    "statusCategory": {
+     "key": "new",
+     "name": "해야 할 일"
+    }
+   },
+   "issuetype": {
+    "name": "버그"
+   },
+   "project": {
+    "key": "PAY",
+    "name": "정산"
+   },
+   "created": "2026-10-05T11:00:00.000+0900",
+   "updated": "2026-10-21T10:30:00.000+0900",
+   "issuelinks": [
+    {
+     "type": {
+      "name": "Relates"
+     },
+     "inwardIssue": {
+      "key": "PAY-142"
+     }
+    }
+   ],
+   "comment": {
+    "comments": [
+     {
+      "author": {
+       "displayName": "박철수"
+      },
+      "body": {
+       "type": "doc",
+       "version": 1,
+       "content": [
+        {
+         "type": "paragraph",
+         "content": [
+          {
+           "type": "text",
+           "text": "재현 완료. 로그 첨부합니다."
+          }
+         ]
+        }
+       ]
+      },
+      "created": "2026-10-21T10:20:00.000+0900"
+     }
+    ],
+    "total": 1
+   },
+   "parent": {
+    "key": "PAY-100",
+    "fields": {
+     "summary": "정산 개선"
+    }
+   },
+   "priority": {
+    "name": "Highest"
+   },
+   "assignee": {
+    "accountId": "mock-other",
+    "displayName": "담당자 mock-other"
+   },
+   "statuscategorychangedate": "2026-10-18T14:00:00.000+0900"
+  }
+ },
+ {
+  "id": "10100",
+  "key": "PAY-100",
+  "fields": {
+   "summary": "정산 개선 (에픽)",
+   "description": {
+    "type": "doc",
+    "version": 1,
+    "content": [
+     {
+      "type": "paragraph",
+      "content": [
+       {
+        "type": "text",
+        "text": "정산 흐름 전반 개선 묶음."
+       }
+      ]
+     }
+    ]
+   },
+   "labels": [
+    "에픽"
+   ],
+   "status": {
+    "name": "진행 중",
+    "statusCategory": {
+     "key": "indeterminate",
+     "name": "진행 중"
+    }
+   },
+   "issuetype": {
+    "name": "에픽"
+   },
+   "project": {
+    "key": "PAY",
+    "name": "정산"
+   },
+   "created": "2026-06-01T10:00:00.000+0900",
+   "updated": "2026-09-10T10:00:00+0900",
+   "issuelinks": [],
+   "comment": {
+    "comments": [],
+    "total": 0
+   },
+   "priority": {
+    "name": "Medium"
+   }
+  }
+ },
+ {
+  "id": "10120",
+  "key": "PAY-120",
+  "fields": {
+   "summary": "PG사 콜백 서명 검증",
+   "description": {
+    "type": "doc",
+    "version": 1,
+    "content": [
+     {
+      "type": "paragraph",
+      "content": [
+       {
+        "type": "text",
+        "text": "서명 검증 실패 시 거절한다."
+       }
+      ]
+     }
+    ]
+   },
+   "labels": [
+    "연동"
+   ],
+   "status": {
+    "name": "완료",
+    "statusCategory": {
+     "key": "done",
+     "name": "완료"
+    }
+   },
+   "issuetype": {
+    "name": "작업"
+   },
+   "project": {
+    "key": "PAY",
+    "name": "정산"
+   },
+   "created": "2026-08-01T10:00:00.000+0900",
+   "updated": "2026-08-25T17:00:00.000+0900",
+   "issuelinks": [],
+   "comment": {
+    "comments": [],
+    "total": 0
+   },
+   "priority": {
+    "name": "Low"
+   },
+   "duedate": "2026-08-31",
+   "assignee": {
+    "accountId": "mock-1",
+    "displayName": "담당자 mock-1"
+   }
+  }
+ }
+]

@@ -1,0 +1,210 @@
+/* tickets.css — Synapse v0.7 티켓 화면(⌘5)과 홈 맨 위 한 줄.
+   토큰은 styles.css의 :root 변수와 cluster.css의 --st-* 만 쓴다(다크·라이트 자동). */
+
+.tk { position: relative; display: flex; flex-direction: column; flex: 1; min-height: 0; --tk-warn: var(--st-blocked); }
+
+/* ---------- 맨 위 막대: 상태 칩 + 내 담당만 ---------- */
+.tk-bar { flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 2px 10px 8px 4px; }
+.tk-gap { flex: 1 1 8px; }
+.tk-chip, .tk-mine {
+  display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 11px 0 9px; border-radius: 14px;
+  font-size: var(--fs-sm); font-weight: 500; color: var(--text-2); background: var(--surface-1); border: 1px solid var(--border);
+  transition: background-color 120ms var(--ease-out), color 120ms var(--ease-out), border-color 120ms var(--ease-out);
+}
+.tk-chip b, .tk-mine b { font-weight: 600; color: var(--text-1); }
+.tk-chip:hover, .tk-mine:hover { background: var(--surface-2); color: var(--text-1); }
+.tk-chip .tk-ci { display: inline-flex; color: var(--st-c, var(--text-3)); }
+.tk-chip.st-blocked { --st-c: var(--st-blocked); }
+.tk-chip.st-doing { --st-c: var(--st-doing); }
+.tk-chip.st-todo { --st-c: var(--st-todo); }
+.tk-chip { --st-c: var(--text-2); }
+/* 켜짐은 굵은 실선 테두리 + 채움, 꺼짐은 가는 점선 + 투명. 색에만 기대지 않는다 */
+.tk-chip[aria-pressed="true"] {
+  color: var(--text-1); border: 1.5px solid color-mix(in srgb, var(--st-c) 75%, transparent); padding: 0 10px 0 8px;
+  background: color-mix(in srgb, var(--st-c) 20%, transparent);
+}
+.tk-chip[aria-pressed="false"] .tk-ci { opacity: .6; }
+.tk-chip[aria-pressed="false"] { border-style: dashed; background: transparent; }
+/* 막힘 0 같은 빈 칩은 흐리게 두되 숫자는 보인다(눌러도 켜고 끄지 않고 안내를 보인다) */
+.tk-chip.is-zero { opacity: .62; }
+.tk-chip.is-zero b { color: var(--text-3); }
+.tk-chip[aria-disabled="true"] { cursor: default; }
+.tk-vsep { width: 1px; height: 18px; background: var(--border-strong); margin: 0 2px; }
+.tk-schip { --st-c: var(--tk-warn); }
+.tk-schip .tk-ci svg { display: block; }
+.tk-mine .tk-sw { position: relative; width: 24px; height: 14px; border-radius: 7px; background: var(--surface-3); flex: none; transition: background-color 120ms var(--ease-out); }
+.tk-mine .tk-sw::after { content: ""; position: absolute; top: 2px; left: 2px; width: 10px; height: 10px; border-radius: 50%; background: var(--surface-raised, #fff); box-shadow: 0 0 0 1px var(--border-strong); transition: transform 120ms var(--ease-out); }
+.tk-mine[aria-pressed="true"] { color: var(--text-1); border-color: var(--accent); background: var(--accent-soft); }
+.tk-mine[aria-pressed="true"] .tk-sw { background: var(--accent); }
+.tk-mine[aria-pressed="true"] .tk-sw::after { transform: translateX(10px); }
+.tk-chip:focus-visible, .tk-mine:focus-visible { outline-offset: 2px; }
+.tk-mine[aria-pressed="false"] { border-style: dashed; background: transparent; }
+
+/* 막힘 0 설명 한 줄 */
+.tk-note { flex: none; margin: -2px 10px 8px 4px; padding: 4px 8px; border-radius: 6px; font-size: var(--fs-xs); line-height: 1.5; color: var(--text-3); word-break: keep-all; transition: color 160ms var(--ease-out), background-color 160ms var(--ease-out); }
+.tk-note[hidden] { display: none; }
+.tk-note.is-flash { color: var(--text-1); background: color-mix(in srgb, var(--tk-warn) 16%, transparent); }
+
+/* ---------- 목록 ---------- */
+.tk-scroll { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; padding: 0 8px 18px 4px; outline: none; scrollbar-width: thin; scrollbar-color: var(--surface-3) transparent; container-type: inline-size; }
+.tk-proj { margin-top: 10px; }
+.tk-proj:first-child { margin-top: 2px; }
+.tk-ph {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 7px; margin: 0 0 3px; padding: 4px 8px;
+  font-size: var(--fs-sm); font-weight: 500; color: var(--text-2);
+}
+.tk-ph.is-quiet { opacity: .8; }
+.tk-pk { font-size: var(--fs-md); font-weight: 700; color: var(--text-1); margin-right: 3px; letter-spacing: 0.01em; }
+.tk-sep { color: var(--text-3); }
+.tk-hb b { font-weight: 600; color: var(--text-1); }
+.tk-hb.is-zero { color: var(--text-3); }
+.tk-hb.is-zero b { color: var(--text-3); font-weight: 500; }
+.tk-hb.is-hot, .tk-hb.is-hot b { color: var(--st-blocked); }
+.tk-hb.is-warn, .tk-hb.is-warn b { color: var(--tk-warn); }
+.tk-hbtn { display: inline-flex; align-items: baseline; gap: 4px; padding: 0 7px; height: 20px; border-radius: 10px; border: 1px dashed color-mix(in srgb, var(--tk-warn) 55%, transparent); font-size: inherit; font-weight: 500; cursor: pointer; align-self: center; }
+.tk-hbtn:hover { background: color-mix(in srgb, var(--tk-warn) 12%, transparent); }
+.tk-hbtn[aria-pressed="true"] { border-style: solid; border-width: 1.5px; padding: 0 6px; background: color-mix(in srgb, var(--tk-warn) 20%, transparent); }
+.tk-hbtn:focus-visible { outline-offset: 2px; }
+
+/* 거르기로 숨은 줄 안내 */
+.tk-hide { display: flex; flex-wrap: wrap; gap: 2px 14px; margin: 0 0 4px; padding: 0 8px; }
+.tk-more { display: inline-flex; gap: 4px; padding: 2px 0; font-size: var(--fs-xs); color: var(--text-3); text-align: left; }
+.tk-more .tk-more-go { color: var(--accent-text); font-weight: 600; }
+.tk-more:hover .tk-more-go { text-decoration: underline; }
+.tk-more:focus-visible { outline-offset: 2px; border-radius: 4px; }
+
+/* 프로젝트 안 상태 소제목 */
+.tk-gh { display: flex; align-items: center; gap: 6px; margin: 6px 0 1px; padding: 0 8px; font-size: var(--fs-xs); font-weight: 600; color: var(--text-2); }
+.tk-gh .tk-ico svg { color: var(--st-c); }
+.tk-gh.st-blocked .tk-ico { --st-c: var(--st-blocked); }
+.tk-gh.st-doing .tk-ico { --st-c: var(--st-doing); }
+.tk-gh.st-todo .tk-ico { --st-c: var(--st-todo); }
+.tk-gh b { font-weight: 600; color: var(--text-3); font-variant-numeric: tabular-nums; }
+
+.tk-row {
+  position: relative; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; width: 100%; padding: 6px 8px 6px 8px;
+  border-radius: 8px; text-align: left; color: var(--text-1); transition: background-color 120ms var(--ease-out);
+}
+.tk-row:hover { background: var(--surface-2); }
+.tk-row.is-sel { background: var(--accent-soft); }
+.tk-row.is-sel::before { content: ""; position: absolute; left: 0; top: 7px; bottom: 7px; width: 2px; border-radius: 2px; background: var(--accent); }
+.tk-row:focus-visible { outline-offset: -2px; }
+.tk-ico { align-self: center; display: inline-flex; flex: none; }
+.tk-ico svg { color: var(--st-c); }
+.tk-row.st-blocked .tk-ico { --st-c: var(--st-blocked); }
+.tk-row.st-doing .tk-ico { --st-c: var(--st-doing); }
+.tk-row.st-todo .tk-ico { --st-c: var(--st-todo); }
+.tk-key { flex: none; font-size: var(--fs-xs); font-weight: 600; color: var(--text-2); font-variant-numeric: tabular-nums; min-width: 66px; }
+/* v0.8: 제목 + (Claude가 쓴) 한 줄 설명을 한 칸에 둔다 */
+.tk-tl { flex: 1 1 220px; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.tk-title {
+  min-width: 0; font-size: var(--fs-md); line-height: 1.4; letter-spacing: -0.005em;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere;
+}
+.tk-ln { display: flex; align-items: center; gap: 5px; min-width: 0; font-size: var(--fs-xs); line-height: 1.5; color: var(--text-3); }
+.tk-ln .icon { width: 10px; height: 10px; flex: none; color: var(--accent-text); opacity: .8; }
+.tk-ln span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tk-meta { flex: 0 1 auto; display: inline-flex; flex-wrap: wrap; align-items: baseline; justify-content: flex-end; gap: 1px 9px; margin-left: auto; font-size: var(--fs-xs); color: var(--text-3); }
+.tk-who { color: var(--text-2); }
+.tk-who.is-me { display: inline-flex; align-items: center; gap: 3px; height: 16px; padding: 0 6px 0 4px; border-radius: 8px; border: 1px solid var(--border-strong); color: var(--text-2); font-weight: 600; align-self: center; }
+.tk-who .tk-person { flex: none; }
+.tk-prio { color: var(--text-2); font-weight: 600; }
+.tk-prio.is-top { color: var(--danger); }
+.tk-due { color: var(--text-2); }
+.tk-due.is-hot { color: var(--danger); font-weight: 600; }
+.tk-time { white-space: nowrap; }
+.tk-stale { display: inline-flex; align-items: center; height: 16px; padding: 0 6px; border-radius: 4px; font-weight: 600; white-space: nowrap; color: var(--tk-warn); background: color-mix(in srgb, var(--tk-warn) 16%, transparent); }
+.tk-dot { display: inline-block; width: 10px; height: 10px; border-radius: 3px; background: var(--st-c, var(--text-3)); }
+/* 좁은 목록: 제목이 한 줄 전체를 쓰고 메타는 그 아래 */
+@container (max-width: 560px) { .tk-tl { flex-basis: calc(100% - 100px); } .tk-meta { margin-left: 24px; justify-content: flex-start; flex-basis: 100%; } }
+
+.tk-state { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 24px 10px 14px; font-size: var(--fs-sm); line-height: 1.6; color: var(--text-3); word-break: keep-all; }
+.tk-state strong { font-size: var(--fs-md); font-weight: 600; color: var(--text-1); }
+.tk-state.is-error strong { color: var(--danger); }
+
+/* ---------- 홈 맨 위 한 줄 ---------- */
+.tk-line {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 3px 8px; width: 100%; margin: 0 0 6px; padding: 7px 10px; border-radius: 9px;
+  text-align: left; font-size: var(--fs-sm); color: var(--text-2); background: var(--surface-1); border: 1px solid var(--border);
+  position: relative; transition: background-color 120ms var(--ease-out);
+}
+.tk-line:hover { background: var(--surface-2); }
+.tk-line[aria-selected="true"] { background: var(--accent-soft); border-color: transparent; }
+.tk-line .tk-lk { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--text-1); }
+.tk-line .tk-lk .icon { width: 14px; height: 14px; color: var(--text-3); }
+.tk-line .tk-lc b { font-weight: 600; color: var(--text-1); }
+.tk-line .tk-lc.is-zero, .tk-line .tk-lc.is-zero b { color: var(--text-3); font-weight: 500; }
+.tk-line .tk-lc.is-warn, .tk-line .tk-lc.is-warn b { color: var(--st-blocked); }   /* 기한 지남(빨강)과 구분되는 주황 */
+.tk-line .tk-lc.is-hot, .tk-line .tk-lc.is-hot b { color: var(--st-blocked); }
+.tk-line .tk-sep { color: var(--text-3); }
+.tk-line .tk-go { margin-left: auto; color: var(--text-3); font-size: var(--fs-md); line-height: 1; }
+
+/* ---------- 이번 주: 내 티켓 표시(완료 초록과 섞이지 않게 중립 테두리 칩 + 사람 아이콘) · 갱신 기준 ---------- */
+.bw-meta .bw-mine { display: inline-flex; align-items: center; gap: 3px; height: 16px; padding: 0 6px 0 4px; border-radius: 8px; border: 1px solid var(--border-strong); color: var(--text-2); font-weight: 600; }
+.bw-meta .bw-mine .bw-person { flex: none; }
+.bw-ch .bw-basis { align-self: center; margin-left: 2px; font-weight: 500; }
+.bw-basisnote { margin-top: 0; margin-bottom: 6px; font-size: var(--fs-xs); line-height: 1.5; }
+
+/* =====================================================================
+   v0.8 Claude 브리핑 · 주제별 · 반영 확인 창 (공용 ai-card·ai-ref·ai-notice는 ai.css)
+   ===================================================================== */
+.tk-theme .icon { width: 13px; height: 13px; color: var(--accent-text); }
+.tk-lead { margin: 0 0 8px; }
+.tk-brief { max-width: none; margin: 2px 0 8px; }
+.tk-fold { padding: 2px 7px; border-radius: 6px; font-size: var(--fs-xs); color: var(--text-3); }
+.tk-fold:hover { background: var(--surface-2); color: var(--text-1); }
+.tk-fold:focus-visible { outline-offset: 1px; }
+.tk-n { font-size: var(--fs-xs); font-weight: 500; color: var(--text-3); }
+.tk-cnote { margin: 3px 0 2px; }
+.tk-more-li { list-style: none; padding: 2px 0 0 100px; }
+.tk-more-li .link-btn { margin-left: 0; padding: 2px 6px; }
+@container (max-width: 520px) { .tk-more-li { padding-left: 0; } }
+.tk-brief .ai-sec { margin-top: 10px; padding-top: 9px; }
+.tk-fr, .tk-cr { display: grid; grid-template-columns: 92px minmax(0, 1fr) auto; column-gap: 8px; align-items: start; padding: 3px 0; }
+.tk-fr { grid-template-columns: 92px minmax(0, 1fr); }
+.tk-fk { display: flex; padding-top: 2px; min-width: 0; }
+.tk-fk .ai-ref { max-width: 100%; }
+.tk-fb { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.tk-ft { font-size: var(--fs-md); line-height: 1.5; letter-spacing: -0.005em; color: var(--text-1); overflow-wrap: anywhere; word-break: keep-all; }
+.tk-fb .ai-why b { font-weight: 600; color: var(--text-2); }
+.tk-op { display: inline-flex; align-items: center; height: 16px; padding: 0 6px; margin-right: 4px; border-radius: 4px; vertical-align: 1px; font-size: var(--fs-xs); font-weight: 600; color: var(--text-2); background: var(--surface-2); }
+.tk-ca { display: inline-flex; align-items: center; gap: 8px; padding-top: 1px; white-space: nowrap; }
+.tk-ok { display: inline-flex; align-items: center; gap: 4px; font-size: var(--fs-xs); font-weight: 600; color: var(--st-done); }
+.tk-ok .icon { width: 13px; height: 13px; }
+.tk-ok.is-queue { color: var(--accent-text); }
+.tk-cr.is-done .tk-ft, .tk-cr.is-done .ai-why { color: var(--text-3); }
+@container (max-width: 520px) {
+  .tk-fr, .tk-cr { grid-template-columns: minmax(0, 1fr); row-gap: 3px; }
+  .tk-ca { padding-top: 2px; }
+}
+.tk-ts { margin: -1px 8px 4px; font-size: var(--fs-xs); line-height: 1.5; color: var(--text-3); word-break: keep-all; }
+
+/* 반영 확인 창: 목록 칸 안에서 뜬다(키는 모듈이 받는다) */
+.tk-dlg-wrap { position: absolute; inset: 0; z-index: 6; display: flex; align-items: flex-start; justify-content: center; padding: 6% 14px 14px; background: var(--scrim); }
+.tk-dlg {
+  width: min(540px, 100%); max-height: 100%; overflow-y: auto; display: flex; flex-direction: column; gap: 11px; padding: 14px 16px 14px; outline: none;
+  border-radius: 14px; background: var(--surface-raised); border: 1px solid var(--border-strong); box-shadow: var(--shadow-pop); scrollbar-width: thin;
+}
+.tk-dlg-h { display: flex; align-items: center; gap: 8px; }
+.tk-dlg-h h2 { flex: 1; margin: 0; font-size: 15px; font-weight: 650; letter-spacing: -0.012em; color: var(--text-1); }
+.tk-dlg-tk { display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; font-size: var(--fs-md); }
+.tk-dlg-tt { flex: 1 1 180px; min-width: 0; font-weight: 600; color: var(--text-1); overflow-wrap: anywhere; word-break: keep-all; }
+.tk-dlg-st { font-size: var(--fs-xs); color: var(--text-3); }
+.tk-dlg-f { display: flex; flex-direction: column; gap: 5px; }
+.tk-dlg-l { display: flex; align-items: baseline; gap: 6px; font-size: var(--fs-sm); font-weight: 600; color: var(--text-2); }
+.tk-dlg-l em { font-style: normal; font-weight: 400; color: var(--text-3); }
+.tk-dlg-l i { margin-left: auto; font-style: normal; font-size: var(--fs-xs); font-weight: 400; color: var(--text-3); }
+.tk-dlg-ta { height: auto; min-height: 124px; padding: 9px 11px; line-height: 1.6; resize: vertical; font-family: inherit; }
+.tk-dlg-in { font-family: inherit; }
+.tk-dlg-why { margin: 0; font-size: var(--fs-xs); line-height: 1.5; color: var(--text-3); word-break: keep-all; }
+.tk-dlg-warn {
+  display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 10px;
+  background: color-mix(in srgb, var(--st-blocked) 14%, transparent); border: 1px solid color-mix(in srgb, var(--st-blocked) 42%, transparent);
+}
+.tk-dlg-warn .icon { flex: none; width: 16px; height: 16px; margin-top: 1px; color: var(--st-blocked); }
+.tk-dlg-warn div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.tk-dlg-warn strong { font-size: var(--fs-md); font-weight: 650; color: var(--text-1); word-break: keep-all; }
+.tk-dlg-warn span { font-size: var(--fs-xs); line-height: 1.5; color: var(--text-2); word-break: keep-all; }
+.tk-dlg-err { margin-top: 0; }
+.tk-dlg-b { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 2px; }
+.tk-dlg-b .btn[hidden] { display: none; }

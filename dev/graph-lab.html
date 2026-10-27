@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Synapse graph lab</title>
+<style>
+:root {
+  --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  --fs-xs: 11px; --fs-sm: 12px; --fs-md: 13px;
+  --bg-fallback: #15171c;
+  --surface-1: rgba(255,255,255,.035); --surface-2: rgba(255,255,255,.06); --surface-3: rgba(255,255,255,.09);
+  --border: rgba(255,255,255,.08); --border-strong: rgba(255,255,255,.14);
+  --text-1: rgba(255,255,255,.92); --text-2: rgba(255,255,255,.66); --text-3: rgba(255,255,255,.46);
+  --accent: #4fd1b0; --accent-text: #7fe3c9; --accent-soft: rgba(79,209,176,.16); --accent-ring: rgba(79,209,176,.45);
+  --topic-finance: #e9a15b; --topic-search: #64a8f0; --topic-product: #b59af0; --topic-idea: #ee8aa6;
+  --graph-edge: rgba(255,255,255,.16); --graph-edge-tag: rgba(255,255,255,.10);
+  --graph-label: rgba(255,255,255,.80); --graph-label-muted: rgba(255,255,255,.46);
+  --graph-label-halo: rgba(21,23,28,.92); --graph-node-ring: rgba(12,14,18,.85); --graph-grid: rgba(255,255,255,.035);
+}
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg-fallback: #f3f4f6;
+    --surface-1: rgba(0,0,0,.03); --surface-2: rgba(0,0,0,.05); --surface-3: rgba(0,0,0,.08);
+    --border: rgba(0,0,0,.08); --border-strong: rgba(0,0,0,.14);
+    --text-1: rgba(0,0,0,.88); --text-2: rgba(0,0,0,.62); --text-3: rgba(0,0,0,.46);
+    --accent: #0e9e80; --accent-text: #0b7d66; --accent-soft: rgba(14,158,128,.12); --accent-ring: rgba(14,158,128,.45);
+    --topic-finance: #c0701f; --topic-search: #2a6fd0; --topic-product: #7c58d6; --topic-idea: #cc4670;
+    --graph-edge: rgba(0,0,0,.17); --graph-edge-tag: rgba(0,0,0,.10);
+    --graph-label: rgba(0,0,0,.76); --graph-label-muted: rgba(0,0,0,.46); --graph-label-halo: rgba(246,247,249,.92);
+    --graph-node-ring: rgba(255,255,255,.92); --graph-grid: rgba(0,0,0,.04);
+  }
+}
+html, body { margin: 0; overscroll-behavior: none; }
+body { background: var(--bg-fallback); color: var(--text-1); font: 13px/1.4 var(--font-ui); padding: 12px; }
+.bar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 10px; }
+.bar button { font: 12px var(--font-ui); color: var(--text-1); background: var(--surface-2); border: 1px solid var(--border);
+  border-radius: 8px; padding: 4px 9px; cursor: pointer; }
+.bar button[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent-ring); }
+.bar .sep { width: 1px; height: 18px; background: var(--border-strong); margin: 0 4px; }
+.row { display: flex; gap: 12px; align-items: flex-start; }
+.panel { position: relative; width: 860px; height: 600px; background: var(--surface-1); border: 1px solid var(--border);
+  border-radius: 12px; overflow: hidden; }
+.overlay { position: absolute; left: 14px; top: 12px; font-size: 12px; color: var(--text-2); pointer-events: none; z-index: 1; }
+.overlay small { display: block; font-size: 11px; color: var(--text-3); margin-top: 2px; }
+.zoom { position: absolute; right: 12px; bottom: 12px; font: 11px var(--font-ui); color: var(--text-3); z-index: 1;
+  font-variant-numeric: tabular-nums; pointer-events: none; }
+.drawer { position: absolute; top: 0; right: 0; bottom: 0; width: 340px; background: rgba(128,128,128,.12);
+  border-left: 1px dashed var(--border-strong); display: none; z-index: 1; pointer-events: none; }
+.panel.with-drawer .drawer { display: block; }
+#log { width: 280px; height: 600px; overflow: auto; font: 11px/1.5 ui-monospace, Menlo, monospace; color: var(--text-2);
+  background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 8px; box-sizing: border-box; }
+</style>
+</head>
+<body>
+<div class="bar" id="bar">
+  <button data-mode="global">#global</button>
+  <button data-mode="search">#search</button>
+  <button data-mode="focus">#focus</button>
+  <button data-mode="tags">#tags</button>
+  <button data-mode="big">#big</button>
+  <span class="sep"></span>
+  <button id="depth">depth 1</button>
+  <button id="tagsToggle">tags off</button>
+  <span class="sep"></span>
+  <button id="zin">+</button><button id="zout">−</button><button id="fit">fit</button>
+  <button id="pulse">pulse</button><button id="drawer">drawer</button><button id="pause">pause</button>
+</div>
+<div class="row">
+  <div class="panel" id="panel">
+    <div class="overlay"><span id="crumb">전체 그래프</span><small id="hint">노드를 클릭해 미리보고, 더블클릭해 중심으로</small></div>
+    <div class="drawer"></div>
+    <div class="zoom" id="zoom">100%</div>
+  </div>
+  <div id="log"></div>
+</div>
+<script src="../src/data.js"></script>
+<script>
+  document.write('<script src="../src/graph.js"><\/script>');
+</script>
+<script>
+'use strict';
+// ------------------------------------------------------------ lab data (§5.3)
+const DATA = window.SYNAPSE_DATA;
+const docs = DATA.docs, docById = new Map(docs.map(d => [d.id, d]));
+const nbr = new Map(docs.map(d => [d.id, new Set()]));
+for (const d of docs) for (const t of d.links) if (docById.has(t) && t !== d.id) { nbr.get(d.id).add(t); nbr.get(t).add(d.id); }
+const degree = id => nbr.get(id) ? nbr.get(id).size : 0;
+const docNode = (d, emphasis) => ({ id: d.id, label: d.short, fullLabel: d.title, kind: 'doc', topic: d.topic, degree: degree(d.id), emphasis });
+function docLinks(ids) {
+  const out = [], seen = new Set();
+  for (const a of ids) for (const b of nbr.get(a) || []) {
+    if (!ids.has(b)) continue;
+    const k = a < b ? a + '|' + b : b + '|' + a;
+    if (!seen.has(k)) { seen.add(k); out.push({ source: a, target: b, kind: 'link' }); }
+  }
+  return out;
+}
+function addTags(nodes, links, ids) {
+  const count = new Map();
+  for (const id of ids) { const d = docById.get(id); if (!d) continue; for (const t of d.tags) count.set(t, (count.get(t) || 0) + 1); }
+  for (const [t, c] of count) nodes.push({ id: 't:' + t, label: '#' + t, kind: 'tag', degree: c, emphasis: 'normal' });
+  for (const id of ids) { const d = docById.get(id); if (!d) continue; for (const t of d.tags) links.push({ source: id, target: 't:' + t, kind: 'tagged' }); }
+}
+function buildGlobal(showTags) {
+  const ids = new Set(docs.map(d => d.id));
+  const nodes = docs.map(d => docNode(d, 'normal')), links = docLinks(ids);
+  if (showTags) addTags(nodes, links, ids);
+  return { data: { nodes, links }, opts: { layoutKey: 'global', centerId: null } };
+}
+function buildSearch(q, showTags) {
+  const syn = (DATA.synonyms.find(g => g.includes(q)) || []).filter(w => w !== q);
+  const scored = [];
+  for (const d of docs) {
+    let s = 0;
+    const score = (w, m) => { if (d.title.includes(w)) s += 50 * m; if (d.tags.includes(w)) s += 32 * m; if (d.body.some(p => p.includes(w))) s += 12 * m; };
+    score(q, 1); for (const w of syn) score(w, 0.28);
+    if (s > 0) scored.push({ d, s });
+  }
+  const max = Math.max(1, ...scored.map(x => x.s));
+  const hub = 'q:' + q, ids = new Set(scored.map(x => x.d.id));
+  const nodes = [{ id: hub, label: q, kind: 'keyword', emphasis: 'center' }];
+  const links = [];
+  for (const { d, s } of scored) { nodes.push(docNode(d, 'match')); links.push({ source: hub, target: d.id, kind: 'query', strength: s / max }); }
+  const ctxIds = [];
+  for (const { d } of scored) for (const n of nbr.get(d.id)) if (!ids.has(n) && !ctxIds.includes(n) && ctxIds.length < 8) ctxIds.push(n);
+  for (const id of ctxIds) { nodes.push(docNode(docById.get(id), 'context')); ids.add(id); }
+  links.push(...docLinks(ids));
+  if (showTags) addTags(nodes, links, ids);
+  return { data: { nodes, links }, opts: { layoutKey: 'search', centerId: hub } };
+}
+function buildFocus(id, depth, showTags) {
+  const c = docById.get(id), ids = new Set([id]);
+  const nodes = [docNode(c, 'center')], links = [];
+  for (const n of nbr.get(id)) { ids.add(n); nodes.push(docNode(docById.get(n), 'normal')); }
+  let same = 0;
+  for (const d of docs) {
+    if (same >= 5 || ids.has(d.id) || !d.tags.some(t => c.tags.includes(t))) continue;
+    ids.add(d.id); nodes.push(docNode(d, 'normal')); links.push({ source: id, target: d.id, kind: 'tag' }); same++;
+  }
+  if (depth === 2) for (const n of Array.from(nbr.get(id))) for (const m of nbr.get(n)) {
+    if (!ids.has(m)) { ids.add(m); nodes.push(docNode(docById.get(m), 'context')); }
+  }
+  links.push(...docLinks(ids));
+  if (showTags) addTags(nodes, links, ids);
+  return { data: { nodes, links }, opts: { layoutKey: 'focus', centerId: id } };
+}
+function buildBig(n) {
+  let s = 12345; const rnd = () => ((s = (s * 1103515245 + 12345) >>> 0) / 4294967296);
+  const topics = ['finance', 'search', 'product', 'idea'], nodes = [], links = [], seen = new Set();
+  for (let i = 0; i < n; i++) nodes.push({ id: 'b' + i, label: '노트 ' + i, fullLabel: '합성 노트 ' + i + ' — 성능 점검', kind: 'doc', topic: topics[i % 4], degree: 0, emphasis: 'normal' });
+  for (let i = 1; i < n; i++) {
+    const m = 1 + Math.floor(rnd() * 2.2);
+    for (let j = 0; j < m; j++) {
+      const t = rnd() < 0.8 ? Math.max(0, i - 1 - Math.floor(rnd() * 12)) : Math.floor(rnd() * i);
+      const k = t + '|' + i; if (seen.has(k)) continue; seen.add(k);
+      links.push({ source: 'b' + t, target: 'b' + i, kind: 'link' });
+    }
+  }
+  const deg = new Map(); for (const l of links) { deg.set(l.source, (deg.get(l.source) || 0) + 1); deg.set(l.target, (deg.get(l.target) || 0) + 1); }
+  for (const nd of nodes) nd.degree = deg.get(nd.id) || 0;
+  return { data: { nodes, links }, opts: { layoutKey: 'global', centerId: null } };
+}
+
+// ------------------------------------------------------------ lab wiring
+const params = new URLSearchParams(location.search);
+const panel = document.getElementById('panel');
+if (params.get('w')) panel.style.width = params.get('w') + 'px';
+if (params.get('h')) panel.style.height = params.get('h') + 'px';
+const logEl = document.getElementById('log');
+const log = msg => { const d = document.createElement('div'); d.textContent = msg; logEl.prepend(d); while (logEl.childElementCount > 80) logEl.lastChild.remove(); };
+const state = { mode: 'global', query: '정산', focusId: 's1', depth: 1, showTags: false, selected: null };
+const graph = SynapseGraph.create(panel, {
+  onSelect(id) { log('onSelect ' + id); state.selected = id; graph.setSelection(id); },
+  onActivate(id) { log('onActivate ' + id); if (docById.has(id)) { state.mode = 'focus'; state.focusId = id; render(); } },
+  onHover(id) { log('onHover ' + id); },
+  onBackgroundClick() { log('onBackgroundClick'); state.selected = null; graph.setSelection(null); },
+  onZoom(k) { document.getElementById('zoom').textContent = Math.round(k * 100) + '%'; },
+});
+const HINT = { global: '노드를 클릭해 미리보고, 더블클릭해 중심으로', search: '키워드와 이어진 문서 · 더블클릭으로 중심 이동', focus: '연결 따라가기 ⇥ · 뒤로 ⌘[' };
+function build() {
+  if (state.mode === 'big') return buildBig(+(params.get('n') || 300));
+  if (state.mode === 'search') return buildSearch(state.query, state.showTags);
+  if (state.mode === 'focus') return buildFocus(state.focusId, state.depth, state.showTags);
+  return buildGlobal(state.showTags);
+}
+function render() {
+  const b = build();
+  const t0 = performance.now();
+  graph.setGraph(b.data, b.opts);
+  window.lastSetGraphMs = performance.now() - t0;
+  log(`setGraph ${state.mode} n=${b.data.nodes.length} l=${b.data.links.length} ${window.lastSetGraphMs.toFixed(1)}ms`);
+  if (state.selected && !b.data.nodes.some(n => n.id === state.selected)) { state.selected = null; graph.setSelection(null); }
+  document.getElementById('crumb').textContent = state.mode === 'search' ? '전체 그래프 › “' + state.query + '”'
+    : state.mode === 'focus' ? '전체 그래프 › ' + docById.get(state.focusId).title : state.mode === 'big' ? '합성 300' : '전체 그래프';
+  document.getElementById('hint').textContent = HINT[state.mode] || '';
+  for (const btn of document.querySelectorAll('[data-mode]')) btn.setAttribute('aria-pressed', String(btn.dataset.mode === (state.showTags && state.mode === 'global' ? 'tags' : state.mode)));
+  document.getElementById('depth').textContent = 'depth ' + state.depth;
+  document.getElementById('tagsToggle').textContent = 'tags ' + (state.showTags ? 'on' : 'off');
+}
+function fromHash() {
+  const h = location.hash.replace('#', '') || 'global';
+  state.showTags = h === 'tags' || /tags/.test(params.get('extra') || '');
+  state.mode = h === 'tags' ? 'global' : ['global', 'search', 'focus', 'big'].includes(h) ? h : 'global';
+  if (params.get('depth')) state.depth = +params.get('depth');
+  render();
+}
+window.addEventListener('hashchange', fromHash);
+document.getElementById('bar').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.mode) { location.hash = b.dataset.mode; return; }
+  switch (b.id) {
+    case 'depth': state.depth = state.depth === 1 ? 2 : 1; render(); break;
+    case 'tagsToggle': state.showTags = !state.showTags; render(); break;
+    case 'zin': graph.zoomBy(1.25); break;
+    case 'zout': graph.zoomBy(0.8); break;
+    case 'fit': graph.fit(); break;
+    case 'pulse': graph.pulse(state.mode === 'search' ? 'q:' + state.query : state.focusId); break;
+    case 'drawer': { const on = panel.classList.toggle('with-drawer'); graph.setPadding({ right: on ? 356 : 24 }); break; }
+    case 'pause': { const p = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', String(p)); graph.setPaused(p); break; }
+  }
+});
+// QA helpers for the headless driver
+window.lab = {
+  graph, state, render,
+  pt(id) { const r = panel.getBoundingClientRect(), d = graph.debugNode(id); return d ? [Math.round(r.left + d.sx), Math.round(r.top + d.sy)] : null; },
+  go(mode, extra) { Object.assign(state, extra || {}); state.mode = mode; render(); },
+  waitIdle(timeout = 8000) {
+    const t0 = performance.now();
+    return new Promise(res => (function poll() {
+      const s = graph.debugStats();
+      if (!s.running || performance.now() - t0 > timeout) res(Object.assign(s, { waited: Math.round(performance.now() - t0) }));
+      else setTimeout(poll, 50);
+    })());
+  },
+};
+fromHash();
+</script>
+</body>
+</html>

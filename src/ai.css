@@ -1,0 +1,117 @@
+/* ai.css — Synapse v0.8 Claude 정리 공용 스타일 (docs/V08.md §8.1).
+   이번 주(week.js)·티켓(tickets.js)·홈·리더·시키기 패널이 함께 쓴다: ai-card · ai-ref · ai-notice · ai-skel · ai-meta · ai-state.
+   토큰은 styles.css의 :root 변수와 cluster.css의 --st-* 만 쓴다(다크·라이트 자동). 움직임은 styles.css의 "모션 줄이기"가 한꺼번에 끈다. */
+
+/* ---------- 정리 카드 ---------- */
+.ai-card {
+  position: relative; max-width: 860px; padding: 14px 16px 10px; border-radius: 12px;
+  background: var(--surface-1); border: 1px solid var(--border);
+}
+.ai-card.is-compact { padding: 11px 14px 8px; }
+.ai-head { display: flex; align-items: center; gap: 8px; min-height: 20px; }
+.ai-tag { display: inline-flex; align-items: center; gap: 5px; font-size: var(--fs-xs); font-weight: 600; letter-spacing: .01em; color: var(--accent-text); }
+.ai-tag .icon { width: 13px; height: 13px; }
+.ai-head-r { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; }
+.ai-headline { margin: 6px 0 0; font-size: 15px; line-height: 1.55; font-weight: 600; letter-spacing: -0.012em; color: var(--text-1); word-break: keep-all; overflow-wrap: anywhere; }
+.ai-lead { margin: 6px 0 0; font-size: var(--fs-md); line-height: 1.6; color: var(--text-2); word-break: keep-all; overflow-wrap: anywhere; }
+/* 다시 정리하는 동안 이전 정리는 흐리게 */
+.ai-body { transition: opacity 160ms var(--ease-out); }
+.ai-card.is-stale .ai-body { opacity: .5; }
+.ai-card > .ai-notice { margin: 8px 0 2px; }
+
+/* 영역 섹션: 제목 + 상태 칩 + 항목 */
+.ai-sec { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); }
+.ai-sec-h { display: flex; align-items: center; gap: 8px; min-height: 20px; }
+.ai-sec-t { font-size: var(--fs-md); font-weight: 600; letter-spacing: -0.005em; color: var(--text-1); overflow-wrap: anywhere; }
+.ai-state {
+  flex: none; display: inline-flex; align-items: center; height: 17px; padding: 0 7px; border-radius: 9px;
+  font-size: 10.5px; font-weight: 600; letter-spacing: -0.01em; line-height: 1; white-space: nowrap;
+  color: var(--st-c, var(--text-2)); background: color-mix(in srgb, var(--st-c, var(--text-2)) 16%, transparent);
+}
+.ai-state[data-s="done"], .ai-item-ic[data-s="done"] { --st-c: var(--st-done); }
+.ai-state[data-s="doing"], .ai-item-ic[data-s="doing"] { --st-c: var(--st-doing); }
+.ai-state[data-s="hold"], .ai-item-ic[data-s="hold"] { --st-c: var(--st-blocked); }
+.ai-state[data-s="planned"], .ai-state[data-s="todo"], .ai-item-ic[data-s="planned"], .ai-item-ic[data-s="todo"] { --st-c: var(--st-todo); }
+.ai-state[data-s="mixed"] { --st-c: var(--text-2); background: transparent; box-shadow: inset 0 0 0 1px var(--border-strong); }
+.ai-items { list-style: none; margin: 4px 0 0; padding: 0; }
+.ai-item { display: flex; align-items: flex-start; gap: 8px; padding: 4px 2px 4px 0; }
+.ai-item-ic { flex: none; display: grid; place-items: center; width: 14px; height: 22px; color: var(--st-c, var(--text-3)); }
+.ai-item-ic svg { display: block; width: 12px; height: 12px; }
+.ai-dot { display: inline-block; width: 9px; height: 9px; border-radius: 3px; background: var(--st-c, var(--text-3)); }
+.ai-item-b { flex: 1; min-width: 0; }
+.ai-item-tx { font-size: var(--fs-md); line-height: 1.6; letter-spacing: -0.005em; color: var(--text-1); word-break: keep-all; overflow-wrap: anywhere; }
+.ai-refs { display: inline-flex; flex-wrap: wrap; gap: 4px; margin-left: 6px; vertical-align: 1px; }
+.ai-why { display: block; margin-top: 1px; font-size: var(--fs-xs); line-height: 1.5; color: var(--text-3); word-break: keep-all; overflow-wrap: anywhere; }
+
+/* 다음 · 위험 구역 */
+.ai-zone { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); }
+.ai-zone-h { display: flex; align-items: center; gap: 6px; min-height: 20px; font-size: var(--fs-sm); font-weight: 600; color: var(--text-2); }
+.ai-zone-h .icon { width: 14px; height: 14px; }
+.ai-zone-h .num { font-weight: 500; color: var(--text-3); }
+.ai-zone.is-next .ai-zone-h .icon, .ai-zone.is-next .ai-item-ic { color: var(--accent-text); }
+.ai-zone.is-risk .ai-zone-h, .ai-zone.is-risk .ai-item-ic { color: var(--st-blocked); }
+.ai-zone .ai-item-ic svg, .ai-zone .ai-item-ic .icon { width: 13px; height: 13px; }
+/* 뺀 것: 흐리게 */
+.ai-skipped { margin: 12px 0 0; padding-top: 10px; border-top: 1px dashed var(--border); font-size: var(--fs-xs); line-height: 1.55; color: var(--text-3); word-break: keep-all; overflow-wrap: anywhere; }
+.ai-skipped b { font-weight: 600; color: var(--text-3); }
+.ai-empty { margin: 8px 0 4px; font-size: var(--fs-sm); line-height: 1.6; color: var(--text-3); word-break: keep-all; }
+.ai-empty strong { display: block; margin-bottom: 2px; font-size: var(--fs-md); font-weight: 600; color: var(--text-1); }
+
+/* ---------- 참조 칩 ---------- */
+.ai-ref {
+  display: inline-flex; align-items: center; max-width: 220px; height: 18px; padding: 0 7px; border-radius: var(--radius-chip);
+  font-size: var(--fs-xs); line-height: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; vertical-align: middle;
+  color: var(--text-2); background: transparent; box-shadow: inset 0 0 0 1px var(--border-strong);
+  transition: background-color 120ms var(--ease-out), color 120ms var(--ease-out), box-shadow 120ms var(--ease-out);
+}
+.ai-ref[data-kind="ticket"] { font-weight: 600; font-variant-numeric: tabular-nums; }
+button.ai-ref:hover { background: var(--surface-3); color: var(--text-1); }
+.ai-ref.is-sel { color: var(--text-1); background: var(--accent-soft); box-shadow: inset 0 0 0 1.5px var(--accent); }
+.ai-ref.is-static { box-shadow: inset 0 0 0 1px var(--border); color: var(--text-3); }
+.ai-ref:focus-visible { outline-offset: 1px; }
+
+/* ---------- 뼈대 로딩 ---------- */
+.ai-skel { display: flex; flex-direction: column; gap: 9px; padding: 8px 0 6px; }
+.ai-skel i {
+  display: block; height: 11px; border-radius: 5px; width: 80%;
+  background: linear-gradient(90deg, var(--surface-2) 0%, var(--surface-3) 50%, var(--surface-2) 100%); background-size: 220% 100%;
+  animation: ai-shimmer 1.5s linear infinite;
+}
+.ai-skel i.ai-skel-h { height: 15px; width: 94%; margin-bottom: 4px; }
+@keyframes ai-shimmer { from { background-position: 120% 0; } to { background-position: -120% 0; } }
+
+/* ---------- 안내 띠 ---------- */
+.ai-notice {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; padding: 8px 12px; border-radius: 10px;
+  font-size: var(--fs-sm); line-height: 1.5; color: var(--text-1); background: var(--surface-2); word-break: keep-all;
+}
+.ai-notice-ic { flex: none; display: inline-flex; align-items: center; }
+.ai-notice-ic .icon { width: 15px; height: 15px; color: var(--text-2); }
+.ai-notice-t { flex: 1 1 220px; min-width: 0; overflow-wrap: anywhere; }
+.ai-notice-b { flex: none; display: inline-flex; gap: 6px; margin-left: auto; }
+.ai-notice.is-run { background: var(--accent-soft); }
+.ai-notice.is-warn { background: color-mix(in srgb, var(--st-blocked) 14%, transparent); }
+.ai-notice.is-warn .ai-notice-ic .icon { color: var(--st-blocked); }
+.ai-notice.is-error { background: var(--danger-soft); }
+.ai-notice.is-error .ai-notice-ic .icon { color: var(--danger); }
+
+/* ---------- 메타 줄: 오늘 17:52 · Sonnet · 12초 · 다시 정리 ---------- */
+.ai-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 2px 8px; margin-top: 12px; padding-top: 9px; border-top: 1px solid var(--border); font-size: var(--fs-xs); color: var(--text-3); }
+.ai-meta .icon { width: 12px; height: 12px; color: var(--accent-text); }
+.ai-meta-t { font-variant-numeric: tabular-nums; }
+.ai-meta-flag { display: inline-flex; align-items: center; height: 16px; padding: 0 6px; border-radius: 4px; font-weight: 600; color: var(--st-blocked); background: color-mix(in srgb, var(--st-blocked) 16%, transparent); }
+.ai-regen { margin-left: auto; display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 8px; border-radius: 6px; font-size: var(--fs-xs); font-weight: 500; color: var(--text-2); transition: background-color 120ms var(--ease-out), color 120ms var(--ease-out); }
+.ai-regen .icon { width: 12px; height: 12px; color: currentColor; }
+.ai-regen:hover { background: var(--surface-2); color: var(--text-1); }
+.ai-regen:disabled { opacity: .55; pointer-events: none; }
+.ai-regen:focus-visible { outline-offset: 1px; }
+
+@media (max-width: 560px) {
+  .ai-card { padding: 12px 12px 8px; }
+  .ai-headline { font-size: 14px; }
+}
+/* 움직임 줄이기: 뼈대는 움직이지 않고 그대로 둔다 (styles.css의 전역 규칙과 같은 뜻 — 이 파일만 따로 써도 지켜진다) */
+@media (prefers-reduced-motion: reduce) {
+  .ai-skel i { animation: none; }
+  .ai-body, .ai-ref, .ai-regen { transition: none; }
+}

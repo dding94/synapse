@@ -1,0 +1,438 @@
+#!/usr/bin/env python3
+# dev/ai-fake/claude — Synapse v0.8 시험용 가짜 Claude Code (docs/V08.md §10). 진짜 Claude·네트워크를 부르지 않는다.
+# 쓰는 법은 같은 폴더의 README.md. Synapse는 SYNAPSE_CLAUDE_BIN=<이 파일>로 부른다(시험 모드에서는 FAKE_CLAUDE_* 변수가 그대로 넘어온다).
+#
+#   --version                                   → "2.1.310 (Claude Code)"
+#   -p --output-format json [--json-schema S]   → stdin을 읽어 structured_output을 만든다. 스키마 속성으로 종류를 알아낸다
+#                                                 (sections→week, focus→tickets, today→home, summary+points→doc, summary+items+questions→tidy).
+#                                                 참조는 stdin 안의 J1·T3 같은 토큰을 쓴다.
+#   -p --output-format stream-json …            → init → assistant 글 → tool_use(mcp__synapse__list_pending) → tool_result → assistant 글 → result
+#                                                 --mcp-config의 synapse 서버가 있으면 실제로 띄워 도구를 부른다(FAKE_CLAUDE_MCP=0이면 지어낸 결과).
+# 환경 변수
+#   FAKE_CLAUDE_MODE   login | limit | slow | badjson | badshape | crash | network   (없으면 정상)
+#   FAKE_CLAUDE_DELAY  답하기 전에 쉬는 초(소수 가능). slow는 이 값(없으면 600초)만큼 쉰다
+#   FAKE_CLAUDE_LOG    받은 인자를 JSON 한 줄씩 덧붙여 남길 파일
+#   FAKE_CLAUDE_TOOLS  stream 모드에서 부를 도구 목록 JSON: [{"name": "list_pending", "input": {}}, …]
+#   FAKE_CLAUDE_IGNORE_TERM=1  SIGTERM을 무시한다(취소의 SIGKILL 단계 시험)
+#   FAKE_CLAUDE_MCP=0  stream 모드에서 MCP 서버를 띄우지 않는다
+import json
+import os
+import re
+import select
+import signal
+import subprocess
+import sys
+import time
+import uuid
+
+VERSION = "2.1.310 (Claude Code)"
+VALUE_FLAGS = {
+    "--output-format", "--json-schema", "--system-prompt", "--append-system-prompt", "--model", "--effort",
+    "--mcp-config", "--allowedTools", "--allowed-tools", "--disallowedTools", "--disallowed-tools", "--tools",
+    "--permission-prompts", "--permission-mode", "--settings", "--setting-sources", "--session-id", "--fallback-model",
+    "--max-budget-usd", "--input-format", "--add-dir", "--agents", "--plugin-dir", "--name", "-n",
+}
+REF_RE = re.compile(r"(?<![A-Za-z0-9])([JTDH][0-9]{1,4})(?![A-Za-z0-9])")
+START = time.time()
+SESSION = str(uuid.uuid4())
+
+
+def env(name, default=None):
+    v = os.environ.get(name)
+    return v if v not in (None, "") else default
+
+
+def log_args(argv):
+    path = env("FAKE_CLAUDE_LOG")
+    if not path:
+        return
+    rec = {"ts": round(time.time(), 3), "argv": argv, "cwd": os.getcwd(),
+           "env": sorted(k for k in os.environ.keys())}
+    try:
+        with open(path, "a", encoding="utf-8") as f:
+            f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+    except OSError:
+        pass
+
+
+def parse(argv):
+    opts, flags, positional = {}, set(), []
+    i = 0
+    while i < len(argv):
+        a = argv[i]
+        if a.startswith("--") and "=" in a:
+            k, v = a.split("=", 1)
+            opts[k] = v
+        elif a in VALUE_FLAGS:
+            opts[a] = argv[i + 1] if i + 1 < len(argv) else ""
+            i += 1
+        elif a.startswith("-"):
+            flags.add(a)
+        else:
+            positional.append(a)
+        i += 1
+    return opts, flags, positional
+
+
+def out(obj):
+    sys.stdout.write(json.dumps(obj, ensure_ascii=False) + "\n")
+    sys.stdout.flush()
+
+
+def sleep(secs):
+    if secs > 0:
+        time.sleep(secs)
+
+
+def ms():
+    return int((time.time() - START) * 1000)
+
+
+def result_obj(text, is_error=False, turns=2, structured=None, denials=None, model="sonnet"):
+    o = {"type": "result", "subtype": "success", "is_error": is_error, "num_turns": turns, "duration_ms": ms(),
+         "duration_api_ms": max(ms() - 5, 0), "result": text, "session_id": SESSION, "total_cost_usd": 0,
+         "permission_denials": denials or [], "stop_reason": "end_turn", "terminal_reason": "completed",
+         "api_error_status": None, "modelUsage": {"claude-%s-fake" % model: {"inputTokens": 1, "outputTokens": 1}}}
+    if structured is not None:
+        o["structured_output"] = structured
+    return o
+
+
+# MARK: - 정리(structured_output) 만들기
+
+def refs_in(text):
+    seen, found = set(), []
+    for m in REF_RE.finditer(text):
+        r = m.group(1)
+        if r not in seen:
+            seen.add(r)
+            found.append(r)
+    return found
+
+
+def chunks(items, n):
+    n = max(1, n)
+    size = max(1, (len(items) + n - 1) // n)
+    return [items[i:i + size] for i in range(0, len(items), size)] or [[]]
+
+
+def week_output(refs):
+    pool = refs[:40]
+    groups = chunks(pool, 3) if len(pool) >= 3 else [pool[:1], pool[1:]]
+    sections = []
+    for i, g in enumerate(groups[:3]):
+        items = [{"text": "%s 관련 작업을 마무리했어요" % r, "state": "done" if j % 2 == 0 else "doing", "refs": [r]}
+                 for j, r in enumerate(g[:8])]
+        if not items:
+            items = [{"text": "이번 주에는 큰 변화가 없었어요", "state": "hold", "refs": []}]
+        sections.append({"title": "가짜 영역 %d" % (i + 1), "state": "mixed" if len(items) > 1 else items[0]["state"].replace("todo", "planned"),
+                         "items": items})
+    while len(sections) < 2:
+        sections.append({"title": "가짜 영역 %d" % (len(sections) + 1), "state": "planned",
+                         "items": [{"text": "다음 주에 시작할 일이에요", "state": "todo", "refs": []}]})
+    j = [r for r in refs if r.startswith("J")]
+    nxt = [{"text": "멈춘 티켓을 먼저 정리해요", "why": "오래 멈춰 있어요", "refs": j[:1]}]
+    risks = [{"text": "기한이 가까운 일이 있어요", "refs": j[-1:]}] if j else []
+    report = "\n".join([
+        "우리 팀",
+        "- 가짜 영역 1 작업 진행 중",
+        "  - 예시 기능 A를 추가했습니다.",
+        "  - 예시 화면의 정렬을 고쳤습니다.",
+        "- 추가 개선사항",
+        "  - 목록 정렬을 고쳤습니다.",
+        "- 다음 주에는 남은 작업을 마무리할 예정입니다.",
+    ])
+    return {"headline": "가짜 정리예요: 참조 %d개를 영역으로 묶었어요" % len(refs), "sections": sections, "next": nxt,
+            "risks": risks, "skipped": {"count": 0, "note": "가짜 정리라 뺀 것이 없어요"}, "report": report}
+
+
+def tickets_output(refs):
+    j = [r for r in refs if r.startswith("J")] or refs
+    focus = [{"ref": r, "why": "오래 멈춰 있어요", "action": "담당자에게 상태를 물어봐요"} for r in j[:3]]
+    groups = chunks(j, 2) if len(j) >= 2 else [j, []]
+    themes = [{"title": "가짜 주제 %s" % "AB"[i], "summary": "비슷한 티켓을 묶었어요", "refs": g} for i, g in enumerate(groups[:2])]
+    lines = [{"ref": r, "text": "%s 티켓을 쉬운 말로 줄였어요" % r} for r in j]
+    cleanup = []
+    if j:
+        cleanup.append({"ref": j[0], "op": "comment", "body": "진행 상황을 알려 주세요. (가짜 초안)", "why": "갱신이 오래 없어요"})
+    if len(j) > 1:
+        cleanup.append({"ref": j[1], "op": "transition", "to": "완료", "why": "작업이 끝난 것 같아요"})
+    return {"headline": "가짜 브리핑이에요: 티켓 %d개" % len(j), "focus": focus, "themes": themes, "lines": lines, "cleanup": cleanup}
+
+
+def home_output(refs):
+    today = [{"text": "%s부터 확인해요" % r, "why": "오늘 볼 일이에요", "refs": [r]} for r in refs[:3]]
+    return {"headline": "가짜 브리핑: 오늘 볼 것 %d개" % len(today), "today": today}
+
+
+def doc_output(text):
+    return {"summary": "가짜 요약이에요. 입력은 %d자였어요." % len(text), "points": ["첫 번째 요점이에요", "두 번째 요점이에요"],
+            "todos": ["남은 일을 확인해요"]}
+
+
+def from_schema(s, depth=0):
+    t = s.get("type") if isinstance(s, dict) else None
+    if isinstance(t, list):
+        t = next((x for x in t if x != "null"), "string")
+    if t == "object" or (isinstance(s, dict) and "properties" in s):
+        props = s.get("properties", {})
+        return {k: from_schema(v, depth + 1) for k, v in props.items()} if depth < 6 else {}
+    if t == "array":
+        return []
+    if t in ("integer", "number"):
+        return 0
+    if t == "boolean":
+        return False
+    if isinstance(s, dict) and "enum" in s and s["enum"]:
+        return s["enum"][0]
+    return "시험"
+
+
+def tidy_output(stdin_text):
+    """v0.9 정리 계획(tidy): 입력 <input>…</input>의 P#·R#·D# 참조로 그럴듯한 제안만 만든다(틀린 항목은 넣지 않는다)."""
+    m = re.search(r"<input>\n(.*)\n</input>", stdin_text, re.S)
+    try:
+        inp = json.loads(m.group(1).replace("<\\/input", "</input")) if m else {}
+    except Exception:
+        inp = {}
+    places, raws, dests = inp.get("places", []), inp.get("raw", []), inp.get("destinations", [])
+    bad = ("secret", "git", "code", "vault", "frozen", "hidden")
+    loose = [p for p in places if p.get("zone") == "loose" and not any(f in p.get("flags", []) for f in bad)]
+    ws = [d for d in dests if "_workspace" in d.get("at", "")]
+    items = []
+    if loose and ws:
+        items.append({"op": "move", "from": [loose[0]["ref"]], "to": ws[0]["ref"], "title": "산출물을 티켓 폴더로",
+                      "reason": "같은 티켓의 산출물이에요", "evidence": ["가짜 근거"], "certainty": "likely", "group": "tickets"})
+    if len(loose) > 1:
+        items.append({"op": "move", "from": [loose[1]["ref"]], "to": "new:2-Areas/가짜영역/운영", "title": "운영 자료를 영역으로",
+                      "reason": "운영 조사 자료예요", "evidence": [], "certainty": "unsure", "group": "desktop"})
+    if raws:
+        items.append({"op": "exclude", "from": [raws[0]["ref"]], "to": None, "title": "원자료 색인에서 빼기",
+                      "reason": "사람이 읽는 문서가 아니에요", "evidence": [], "certainty": "certain", "group": "index"})
+    for p in places:
+        if "secret" in p.get("flags", []):
+            items.append({"op": "note", "from": [p["ref"]], "to": None, "title": "비밀 파일 알림",
+                          "reason": "비밀 값 파일은 직접 옮기거나 지워 주세요", "evidence": [], "certainty": "certain", "group": "check"})
+            break
+    qs = [{"place": loose[-1]["ref"], "text": "이 파일은 어디에 둘까요?"}] if len(loose) > 2 else []
+    return {"summary": "가짜 정리 계획이에요: 자리 %d개를 봤어요" % len(places), "items": items, "questions": qs}
+
+
+def structured(schema, stdin_text):
+    props = set((schema or {}).get("properties", {}).keys())
+    refs = refs_in(stdin_text)
+    if {"items", "questions", "summary"} <= props:
+        return tidy_output(stdin_text)
+    if "sections" in props:
+        return week_output(refs)
+    if "focus" in props:
+        return tickets_output(refs)
+    if "today" in props:
+        return home_output(refs)
+    if "summary" in props and "points" in props:
+        return doc_output(stdin_text)
+    return from_schema(schema or {})
+
+
+# MARK: - MCP (stream 모드)
+
+def mcp_server(path):
+    try:
+        cfg = json.load(open(path, encoding="utf-8"))
+        return cfg.get("mcpServers", {}).get("synapse")
+    except (OSError, ValueError):
+        return None
+
+
+class MCP:
+    def __init__(self, server):
+        e = dict(os.environ)
+        e.update(server.get("env") or {})
+        self.p = subprocess.Popen([server["command"]] + list(server.get("args") or []), stdin=subprocess.PIPE,
+                                  stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, env=e)
+        self.next_id = 1
+        self.buf = b""
+        self.request("initialize", {"protocolVersion": "2025-06-18", "capabilities": {},
+                                    "clientInfo": {"name": "fake-claude", "version": "0"}})
+        self.notify("notifications/initialized")
+
+    def notify(self, method):
+        self.p.stdin.write((json.dumps({"jsonrpc": "2.0", "method": method}) + "\n").encode())
+        self.p.stdin.flush()
+
+    def request(self, method, params, timeout=20):
+        mid = self.next_id
+        self.next_id += 1
+        self.p.stdin.write((json.dumps({"jsonrpc": "2.0", "id": mid, "method": method, "params": params}) + "\n").encode())
+        self.p.stdin.flush()
+        deadline = time.time() + timeout
+        fd = self.p.stdout.fileno()
+        while time.time() < deadline:
+            while b"\n" in self.buf:
+                line, self.buf = self.buf.split(b"\n", 1)
+                try:
+                    m = json.loads(line)
+                except ValueError:
+                    continue
+                if m.get("id") == mid:
+                    return m
+            r, _, _ = select.select([fd], [], [], 0.5)
+            if r:
+                chunk = os.read(fd, 65536)
+                if not chunk:
+                    break
+                self.buf += chunk
+        raise RuntimeError("MCP 응답이 없어요")
+
+    def call(self, name, args):
+        m = self.request("tools/call", {"name": name, "arguments": args})
+        res = m.get("result") or {}
+        texts = [c.get("text", "") for c in res.get("content", []) if c.get("type") == "text"]
+        if "error" in m:
+            return m["error"].get("message", "오류"), True
+        return "\n".join(texts) or json.dumps(res.get("structuredContent", {}), ensure_ascii=False), bool(res.get("isError"))
+
+    def close(self):
+        try:
+            self.p.stdin.close()
+            self.p.wait(timeout=5)
+        except Exception:
+            self.p.kill()
+
+
+def stream(opts, stdin_text, model, delay):
+    allowed = set(x for x in re.split(r"[,\s]+", opts.get("--allowedTools", opts.get("--allowed-tools", ""))) if x)
+    try:
+        tools = json.loads(env("FAKE_CLAUDE_TOOLS", "")) if env("FAKE_CLAUDE_TOOLS") else [{"name": "list_pending", "input": {}}]
+    except ValueError:
+        tools = [{"name": "list_pending", "input": {}}]
+    server = mcp_server(opts["--mcp-config"]) if opts.get("--mcp-config") else None
+    use_mcp = server is not None and env("FAKE_CLAUDE_MCP", "1") != "0" and os.access(server.get("command", ""), os.X_OK)
+    step = delay / (len(tools) + 2) if delay else 0
+    out({"type": "system", "subtype": "init", "cwd": os.getcwd(), "session_id": SESSION, "model": "claude-%s-fake" % model,
+         "tools": sorted(allowed), "mcp_servers": [{"name": "synapse", "status": "connected" if server else "failed"}],
+         "permissionMode": "default", "claude_code_version": VERSION.split()[0]})
+    msg = "msg_fake_1"
+    out({"type": "assistant", "message": {"id": msg, "role": "assistant", "model": "claude-%s-fake" % model,
+                                          "content": [{"type": "text", "text": "먼저 Synapse 자료를 볼게요."}]}, "session_id": SESSION})
+    mcp = None
+    if use_mcp:
+        try:
+            mcp = MCP(server)
+        except Exception:
+            mcp = None
+    denials, results = [], []
+    for n, t in enumerate(tools):
+        sleep(step)
+        name = "mcp__synapse__" + t.get("name", "list_pending")
+        tid = "toolu_fake_%d" % (n + 1)
+        out({"type": "assistant", "message": {"id": msg, "role": "assistant", "content": [
+            {"type": "tool_use", "id": tid, "name": name, "input": t.get("input", {})}]}, "session_id": SESSION})
+        if allowed and name not in allowed:
+            text = "Permission for this tool use was denied. (fake)"
+            out({"type": "system", "subtype": "permission_denied", "tool_name": name, "tool_use_id": tid, "session_id": SESSION})
+            out({"type": "user", "message": {"role": "user", "content": [
+                {"type": "tool_result", "tool_use_id": tid, "content": text, "is_error": True}]}, "session_id": SESSION})
+            denials.append({"tool_name": name, "tool_use_id": tid, "tool_input": t.get("input", {})})
+            continue
+        if mcp is not None:
+            try:
+                text, err = mcp.call(t.get("name", "list_pending"), t.get("input", {}))
+            except Exception as e:
+                text, err = "MCP 호출 실패: %s" % e, True
+        else:
+            text, err = json.dumps({"items": [], "note": "가짜 결과"}, ensure_ascii=False), False
+        block = {"type": "tool_result", "tool_use_id": tid, "content": text}
+        if err:
+            block["is_error"] = True
+        out({"type": "user", "message": {"role": "user", "content": [block]}, "session_id": SESSION})
+        results.append((name, err))
+    if mcp is not None:
+        mcp.close()
+    sleep(step)
+    answer = "가짜 Claude가 일을 마쳤어요.\n\n- 부른 도구: %d개\n- 거절된 도구: %d개\n- 지시: %s" % (
+        len(results), len(denials), stdin_text.strip().splitlines()[0][:60] if stdin_text.strip() else "(없음)")
+    out({"type": "assistant", "message": {"id": "msg_fake_2", "role": "assistant", "content": [{"type": "text", "text": answer}]},
+         "session_id": SESSION})
+    out(result_obj(answer, turns=len(tools) + 1, denials=denials, model=model))
+
+
+# MARK: - 실패 흉내
+
+def fail_mode(mode, fmt):
+    if mode == "login":
+        if fmt == "stream-json":
+            out({"type": "system", "subtype": "init", "session_id": SESSION, "model": "claude-fake"})
+        out(result_obj("Not logged in · Please run /login", is_error=True, turns=0))
+        sys.exit(1)
+    if mode == "limit":
+        reset = int(time.time()) + 3600
+        if fmt == "stream-json":
+            out({"type": "system", "subtype": "init", "session_id": SESSION, "model": "claude-fake"})
+            out({"type": "rate_limit_event", "rate_limit_info": {"status": "rejected", "resetsAt": reset, "rateLimitType": "five_hour"}})
+        out(result_obj("Claude AI usage limit reached|%d" % reset, is_error=True, turns=0))
+        sys.exit(1)
+    if mode == "crash":
+        sys.stderr.write("Error: fake crash (시험)\n    at main (%s/fake/cli.js:1:1)\n" % os.path.expanduser("~"))
+        sys.exit(3)
+    if mode == "network":
+        sys.stderr.write("API Error: getaddrinfo ENOTFOUND api.anthropic.com\n")
+        sys.exit(1)
+    if mode == "badjson":
+        if fmt == "stream-json":
+            out({"type": "system", "subtype": "init", "session_id": SESSION, "model": "claude-fake"})
+            sys.stdout.write("{이건 JSON이 아니에요\n")
+            sys.stdout.flush()
+        else:
+            sys.stdout.write("이건 JSON이 아니에요 {broken\n")
+        sys.exit(0)
+
+
+def main():
+    argv = sys.argv[1:]
+    log_args(argv)
+    if "--version" in argv or "-v" in argv:
+        print(VERSION)
+        return
+    if env("FAKE_CLAUDE_IGNORE_TERM") == "1":
+        signal.signal(signal.SIGTERM, signal.SIG_IGN)
+    opts, flags, positional = parse(argv)
+    if "-p" not in flags and "--print" not in flags:
+        sys.stderr.write("fake claude: -p 없이 부르면 대화형이라 시험에서는 쓰지 않아요\n")
+        sys.exit(2)
+    stdin_text = "" if sys.stdin.isatty() else sys.stdin.read()
+    if positional:
+        stdin_text = " ".join(positional) + ("\n\n" + stdin_text if stdin_text else "")
+    fmt = opts.get("--output-format", "text")
+    model = opts.get("--model", "sonnet")
+    mode = env("FAKE_CLAUDE_MODE", "")
+    delay = float(env("FAKE_CLAUDE_DELAY", "0") or 0)
+    if mode == "slow":
+        sleep(delay if delay > 0 else 600)
+        delay = 0
+    fail_mode(mode, fmt)
+    if fmt == "stream-json":
+        stream(opts, stdin_text, model, delay)
+        return
+    sleep(delay)
+    schema = None
+    if "--json-schema" in opts:
+        try:
+            schema = json.loads(opts["--json-schema"])
+        except ValueError:
+            sys.stderr.write("Error: --json-schema is not valid JSON\n")
+            sys.exit(1)
+    if schema is not None:
+        so = {"unexpected": True} if mode == "badshape" else structured(schema, stdin_text)
+        res = result_obj(json.dumps(so, ensure_ascii=False), structured=so, model=model)
+    else:
+        text = "OK" if "OK" in stdin_text else "가짜 Claude 답이에요."
+        res = result_obj(text, turns=1, model=model)
+    if fmt == "json":
+        out(res)
+    else:
+        print(res["result"])
+
+
+if __name__ == "__main__":
+    main()

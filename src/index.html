@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<title>Synapse</title>
+<style>
+/* @inline styles.css */
+</style>
+<style>
+/* @inline brain.css */
+</style>
+<style>
+/* @inline menu.css */
+</style>
+<style>
+/* @inline markdown.css */
+</style>
+<style>
+/* @inline notes.css */
+</style>
+<style>
+/* @inline trash.css */
+</style>
+<style>
+/* @inline cluster.css */
+</style>
+<style>
+/* @inline homeurgent.css */
+</style>
+<style>
+/* @inline tickets.css */
+</style>
+<style>
+/* @inline workmap.css */
+</style>
+<style>
+/* @inline ai.css */
+</style>
+<style>
+/* @inline aipanel.css */
+</style>
+</head>
+<body>
+<svg class="sprite" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <symbol id="i-brand" viewBox="0 0 24 24"><circle cx="6" cy="7.5" r="2.4"/><circle cx="18" cy="6" r="2.4"/><circle cx="12.5" cy="18" r="2.4"/><path d="M8.3 7.2 15.6 6.3M7.2 9.6l4.1 6.3M16.9 8.2l-3.3 7.6"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 5 5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M7 7l10 10M17 7 7 17"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M9 3.75h6M10.25 3.75v5.1L7.25 12v1.75h9.5V12l-3-3.15v-5.1M12 13.75v6.5"/></symbol>
+    <symbol id="i-hide" viewBox="0 0 24 24"><path d="M6.5 9.5 12 15l5.5-5.5"/></symbol>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M14.5 6.5 9 12l5.5 5.5"/></symbol>
+    <symbol id="i-next" viewBox="0 0 24 24"><path d="M9.5 6.5 15 12l-5.5 5.5"/></symbol>
+    <symbol id="i-hash" viewBox="0 0 24 24"><path d="M10 4.5 8 19.5M16 4.5l-2 15M5 9.25h14.5M4.5 14.75H19"/></symbol>
+    <symbol id="i-sidebar" viewBox="0 0 24 24"><rect x="3.75" y="5.25" width="16.5" height="13.5" rx="2.5"/><path d="M14.25 5.25v13.5"/></symbol>
+    <symbol id="i-expand" viewBox="0 0 24 24"><path d="M14 4.75h5.25V10M10 19.25H4.75V14M19.25 4.75l-5.5 5.5M4.75 19.25l5.5-5.5"/></symbol>
+    <symbol id="i-collapse" viewBox="0 0 24 24"><path d="M18.75 10.25H13.75v-5M5.25 13.75h5v5M13.75 10.25l5.5-5.5M10.25 13.75l-5.5 5.5"/></symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24"><path d="M6 12h12"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 6v12M6 12h12"/></symbol>
+    <symbol id="i-fit" viewBox="0 0 24 24"><path d="M4.75 9V6.25a1.5 1.5 0 0 1 1.5-1.5H9M15 4.75h2.75a1.5 1.5 0 0 1 1.5 1.5V9M19.25 15v2.75a1.5 1.5 0 0 1-1.5 1.5H15M9 19.25H6.25a1.5 1.5 0 0 1-1.5-1.5V15"/><circle cx="12" cy="12" r="2.25"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3.75 7.25a2 2 0 0 1 2-2h3.4l2 2.25h7.1a2 2 0 0 1 2 2v7.75a2 2 0 0 1-2 2H5.75a2 2 0 0 1-2-2z"/></symbol>
+    <symbol id="i-follow" viewBox="0 0 24 24"><path d="M4.5 12h11M11.5 7.5 16 12l-4.5 4.5M19.5 6.5v11"/></symbol>
+    <symbol id="i-doc" viewBox="0 0 24 24"><path d="M7 3.75h6.5l4.5 4.5v10.5a1.5 1.5 0 0 1-1.5 1.5h-9.5a1.5 1.5 0 0 1-1.5-1.5V5.25A1.5 1.5 0 0 1 7 3.75z"/><path d="M13.5 3.75v4.5H18M9 12.5h6M9 15.75h4"/></symbol>
+    <symbol id="i-graph" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.5"/><circle cx="5" cy="6" r="1.75"/><circle cx="19" cy="7" r="1.75"/><circle cx="17.5" cy="18.5" r="1.75"/><circle cx="5.5" cy="17.5" r="1.75"/><path d="m6.5 7.1 3.6 3.2M17.4 7.9l-3.3 2.8M16.4 17.1l-2.5-3.2M7 16.6l3.1-2.6"/></symbol>
+    <symbol id="i-stack" viewBox="0 0 24 24"><path d="M12 4.25 19.75 8 12 11.75 4.25 8z"/><path d="m4.25 12 7.75 3.75L19.75 12M4.25 16 12 19.75 19.75 16"/></symbol>
+    <symbol id="i-obsidian" viewBox="0 0 24 24"><path d="M9.6 3.6 15.4 5.3l3.1 7.3-3.9 7.8H8.9l-3.4-5.6L7.2 7.4z"/><path d="M9.6 3.6 11.3 12 5.5 14.8M11.3 12l3.3 8.4M11.3 12l7.2.6"/></symbol>
+    <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7.25 18.75h9.5a4 4 0 0 0 .55-7.96 5.5 5.5 0 0 0-10.5-1.04 4.5 4.5 0 0 0 .45 9z"/></symbol>
+    <symbol id="i-ticket" viewBox="0 0 24 24"><path d="M4.25 7.75a1.5 1.5 0 0 1 1.5-1.5h12.5a1.5 1.5 0 0 1 1.5 1.5v2.5a1.75 1.75 0 0 0 0 3.5v2.5a1.5 1.5 0 0 1-1.5 1.5H5.75a1.5 1.5 0 0 1-1.5-1.5v-2.5a1.75 1.75 0 0 0 0-3.5z"/><path d="M14.5 6.5v11" stroke-dasharray="1.6 2.2"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M19 12.5a7 7 0 1 1-2.1-5.6M19.25 4.75v4h-4"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M5 7.25h14M10 4.25h4M7 7.25l.75 11a1.5 1.5 0 0 0 1.5 1.5h5.5a1.5 1.5 0 0 0 1.5-1.5l.75-11M10.25 10.75v5.5M13.75 10.75v5.5"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><path d="M6.5 12h.01M12 12h.01M17.5 12h.01" stroke-width="2.4"/></symbol>
+    <symbol id="i-external" viewBox="0 0 24 24"><path d="M13.75 4.75h5.5v5.5M19.25 4.75 11.5 12.5M17.25 13.75v4a1.5 1.5 0 0 1-1.5 1.5h-9.5a1.5 1.5 0 0 1-1.5-1.5v-9.5a1.5 1.5 0 0 1 1.5-1.5h4"/></symbol>
+    <symbol id="i-reveal" viewBox="0 0 24 24"><path d="M3.75 7.25a2 2 0 0 1 2-2h3.4l2 2.25h7.1a2 2 0 0 1 2 2v2.25M10.5 18.75H5.75a2 2 0 0 1-2-2V9.5"/><circle cx="16" cy="16" r="2.75"/><path d="m18 18 2.25 2.25"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.25"/><path d="M12 7.75v5.25M12 16.1v.2"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5.25" y="10.75" width="13.5" height="9" rx="2"/><path d="M8.5 10.75V8a3.5 3.5 0 0 1 7 0v2.75"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M14.75 5.75 18.25 9.25M5.25 18.75l.9-3.9L15.9 5.1a1.6 1.6 0 0 1 2.25 0l.75.75a1.6 1.6 0 0 1 0 2.25L9.15 17.85z"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4.75 7.5h8.5M17.25 7.5h2M4.75 16.5h2M10.75 16.5h8.5"/><circle cx="15.25" cy="7.5" r="2"/><circle cx="8.75" cy="16.5" r="2"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.25"/><path d="M12 11v5.25M12 7.9v.2"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.75" y="8.75" width="10.5" height="10.5" rx="2"/><path d="M15.25 8.75v-2a2 2 0 0 0-2-2h-6.5a2 2 0 0 0-2 2v6.5a2 2 0 0 0 2 2h2"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m6 12.5 4 4 8-9"/></symbol>
+    <symbol id="i-plug" viewBox="0 0 24 24"><path d="M9 3.75v4M15 3.75v4M6.75 7.75h10.5v3.5a5.25 5.25 0 0 1-10.5 0zM12 16.5v3.75"/></symbol>
+    <!-- v0.5 사서 화면 -->
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M4.75 10.5 12 4.75l7.25 5.75v8a1.5 1.5 0 0 1-1.5 1.5h-3.5v-5.5h-4.5V20h-3.5a1.5 1.5 0 0 1-1.5-1.5z"/></symbol>
+    <symbol id="i-inbox" viewBox="0 0 24 24"><path d="M4.25 13.25 6.6 6.1a1.5 1.5 0 0 1 1.42-1.05h7.96a1.5 1.5 0 0 1 1.42 1.05l2.35 7.15v4.5a1.5 1.5 0 0 1-1.5 1.5H5.75a1.5 1.5 0 0 1-1.5-1.5z"/><path d="M4.25 13.25h4.25l1.25 2.25h4.5l1.25-2.25h4.25"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="4.25" y="5.75" width="15.5" height="14" rx="2"/><path d="M4.25 10h15.5M8.5 3.75v3.5M15.5 3.75v3.5"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24"><path d="M6.5 20.25V4.75M6.5 5.25h10.75l-2.25 3.75 2.25 3.75H6.5"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24"><path d="m8.5 8-4 4 4 4M15.5 8l4 4-4 4M13.5 5.5l-3 13"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M18.75 14.25A7.25 7.25 0 0 1 9.75 5.25a7.25 7.25 0 1 0 9 9z"/></symbol>
+    <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="m11 4.5 1.6 4.4 4.4 1.6-4.4 1.6L11 16.5l-1.6-4.4L5 10.5l4.4-1.6zM17.75 15.25l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7z"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9 6.5v11M15 6.5v11"/></symbol>
+    <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 6 5 10l4 4"/><path d="M5.5 10h8.25a4.75 4.75 0 0 1 0 9.5H10.5"/></symbol>
+    <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.25"/><path d="M9.75 9.6a2.3 2.3 0 0 1 4.45.7c0 1.6-2.2 2-2.2 3.4M12 16.6v.2"/></symbol>
+    <symbol id="i-move" viewBox="0 0 24 24"><path d="M4.75 12h13.5M13.5 7.25 18.25 12l-4.75 4.75"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M9.5 7h9.75M9.5 12h9.75M9.5 17h9.75M5.25 7h.01M5.25 12h.01M5.25 17h.01"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.25"/><path d="M12 7.75V12l2.75 1.75"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10.25 13.75a3.5 3.5 0 0 0 5 0l3-3a3.54 3.54 0 0 0-5-5l-1 1M13.75 10.25a3.5 3.5 0 0 0-5 0l-3 3a3.54 3.54 0 0 0 5 5l1-1"/></symbol>
+    <symbol id="i-workmap" viewBox="0 0 24 24"><path d="M3.75 6.5 9 4.5l6 2 5.25-2v13L15 19.5l-6-2-5.25 2z"/><path d="M9 4.5v13M15 6.5v13"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.75"/><path d="M12 3.75v2.1M12 18.15v2.1M3.75 12h2.1M18.15 12h2.1M6.17 6.17l1.48 1.48M16.35 16.35l1.48 1.48M6.17 17.83l1.48-1.48M16.35 7.65l1.48-1.48"/></symbol>
+  </defs>
+</svg>
+
+<div class="app" id="app">
+  <header class="header" data-drag-region>
+    <div class="brand" data-drag-region>
+      <svg class="brand-mark" aria-hidden="true"><use href="#i-brand"/></svg>
+      <span class="brand-name">Synapse</span>
+    </div>
+    <div class="nav-btns" id="nav-btns">
+      <button class="icon-btn" id="nav-back" type="button" disabled title="뒤로 · ⌘[ · 마우스 뒤로 버튼" aria-label="뒤로"><svg class="icon" aria-hidden="true"><use href="#i-back"/></svg></button>
+      <button class="icon-btn" id="nav-fwd" type="button" disabled title="앞으로 · ⌘] · 마우스 앞으로 버튼" aria-label="앞으로"><svg class="icon" aria-hidden="true"><use href="#i-next"/></svg></button>
+    </div>
+    <div class="search" id="search-box">
+      <svg class="icon search-icon" aria-hidden="true"><use href="#i-search"/></svg>
+      <input id="search" class="search-input" type="text" role="combobox" aria-expanded="true" aria-controls="results" aria-autocomplete="list" aria-label="문서 검색" placeholder="키워드, 제목, 태그로 검색" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      <div class="search-trail">
+        <kbd class="hotkey-badge" id="hotkey-badge" title="어디서든 이 단축키로 Synapse를 부릅니다">⌃⌥Space</kbd>
+        <span class="search-count" id="search-count" aria-live="polite"></span>
+        <button class="clear-btn" id="clear-search" type="button" title="검색어 지우기" aria-label="검색어 지우기" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+      </div>
+    </div>
+    <nav class="modes" id="modes" aria-label="화면 바꾸기" hidden>
+      <button class="mode-btn" type="button" data-mode="home" aria-pressed="false" aria-label="홈" title="홈 · ⌘1"><svg class="icon" aria-hidden="true"><use href="#i-home"/></svg><span>홈</span></button>
+      <button class="mode-btn" type="button" data-mode="workmap" aria-pressed="false" aria-label="작업 지도" title="작업 지도 · ⌘2 · 그래프는 ⌥⌘2"><svg class="icon" aria-hidden="true"><use href="#i-workmap"/></svg><span>작업 지도</span></button>
+      <button class="mode-btn" type="button" data-mode="queue" aria-pressed="false" aria-label="정리함" title="정리함 · ⌘3"><svg class="icon" aria-hidden="true"><use href="#i-inbox"/></svg><span>정리</span><i class="mode-dot" id="queue-dot" aria-hidden="true" hidden></i></button>
+      <button class="mode-btn" type="button" data-mode="week" aria-pressed="false" aria-label="이번 주" title="이번 주 · ⌘4"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg><span>이번 주</span></button>
+      <button class="mode-btn" type="button" data-mode="tickets" aria-pressed="false" aria-label="티켓" title="티켓 · ⌘5"><svg class="icon" aria-hidden="true"><use href="#i-ticket"/></svg><span>티켓</span></button>
+    </nav>
+    <div class="header-actions">
+      <button class="src-btn" id="src-btn" type="button" aria-label="자료와 설정" title="자료와 설정 · 폴더·옵시디언·Confluence·Jira" aria-haspopup="dialog"><svg class="icon" aria-hidden="true"><use href="#i-stack"/></svg><span>자료</span><span class="src-btn-dot" aria-hidden="true"></span></button>
+      <button class="icon-btn" id="pin-btn" type="button" aria-pressed="false" title="항상 위에 표시" aria-label="항상 위에 표시"><svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg></button>
+      <button class="icon-btn" id="hide-btn" type="button" title="숨기기 · esc" aria-label="숨기기"><svg class="icon" aria-hidden="true"><use href="#i-hide"/></svg></button>
+    </div>
+  </header>
+
+  <div class="keyrow" data-drag-region>
+    <span class="keyrow-label" id="kw-label">자주 쓰는 태그</span>
+    <div class="kw-chips" id="kw-chips"></div>
+    <span class="keyrow-summary" id="kw-summary"></span>
+  </div>
+
+  <main class="main" id="main">
+    <section class="list-col" aria-label="문서 목록">
+      <div class="results" id="results" role="listbox" aria-label="검색 결과"></div>
+      <div class="mod-list" id="mod-list" hidden></div>
+    </section>
+
+    <section class="graph-panel" id="graph-panel" aria-label="연결 그래프">
+      <div class="graph-canvas" id="graph-host" role="img" aria-label="문서 관계 지도. 같은 내용을 왼쪽 목록에서 키보드로 고를 수 있어요"></div>
+
+      <div class="graph-empty" id="graph-empty" hidden>
+        <div class="graph-empty-icon"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg></div>
+        <p class="graph-empty-text" id="graph-empty-text"></p>
+        <p class="graph-empty-sub" id="graph-empty-sub"></p>
+        <div class="graph-empty-chips" id="graph-empty-chips"></div>
+      </div>
+
+      <div class="g-nav overlay">
+        <div class="g-trail">
+          <button class="icon-btn sm" id="back-btn" type="button" title="뒤로 · ⌘[" aria-label="뒤로"><svg class="icon" aria-hidden="true"><use href="#i-back"/></svg></button>
+          <nav class="crumbs" id="crumbs" aria-label="탐색 경로"></nav>
+        </div>
+        <p class="g-help" id="g-help"></p>
+        <div class="g-status" id="g-status" hidden></div>
+      </div>
+
+      <div class="g-tools overlay">
+        <div class="tool-group">
+          <button class="icon-btn sm" id="tags-btn" type="button" aria-pressed="false" title="태그 노드 보기" aria-label="태그 노드 보기"><svg class="icon" aria-hidden="true"><use href="#i-hash"/></svg></button>
+          <div class="seg" id="depth-seg" role="group" aria-label="연결 깊이" hidden>
+            <button type="button" data-depth="1" aria-pressed="true" aria-label="직접 연결만 보기, 1단계" title="직접 연결만">1</button>
+            <button type="button" data-depth="2" aria-pressed="false" aria-label="두 단계 연결까지 보기, 2단계" title="두 단계 연결까지">2</button>
+          </div>
+          <button class="icon-btn sm" id="reader-btn" type="button" aria-pressed="true" title="리더 열기·닫기 · ⌘\" aria-label="리더 열기·닫기"><svg class="icon" aria-hidden="true"><use href="#i-sidebar"/></svg></button>
+        </div>
+      </div>
+
+      <button class="g-done overlay" id="g-done" type="button" hidden></button>
+      <button class="g-archive overlay" id="g-archive" type="button" hidden></button>
+
+      <div class="g-legend overlay" id="legend" role="group" aria-label="주제 필터 · ⌥클릭하면 그 주제만"></div>
+
+      <div class="g-zoom overlay">
+        <div class="tool-group">
+          <button class="icon-btn sm" id="zoom-out" type="button" title="축소 · ⌘−" aria-label="축소"><svg class="icon" aria-hidden="true"><use href="#i-minus"/></svg></button>
+          <button class="zoom-pct" id="zoom-pct" type="button" aria-label="100% 크기로 보기" title="100%로 보기">100%</button>
+          <button class="icon-btn sm" id="zoom-in" type="button" title="확대 · ⌘=" aria-label="확대"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></button>
+          <span class="tool-sep" aria-hidden="true"></span>
+          <button class="icon-btn sm" id="zoom-fit" type="button" title="화면에 맞추기 · ⌘0" aria-label="화면에 맞추기"><svg class="icon" aria-hidden="true"><use href="#i-fit"/></svg></button>
+        </div>
+      </div>
+    </section>
+
+    <div class="reader-wrap" id="reader-wrap">
+      <aside class="reader" id="reader" aria-label="문서 미리보기">
+        <div class="reader-scroll" id="reader-scroll">
+          <div class="reader-inner" id="reader-inner"></div>
+        </div>
+        <div class="reader-foot" id="reader-foot">
+          <div class="open-row" id="open-row" hidden>
+            <button class="edit-big" id="edit-big" type="button" data-act="edit" title="원문 편집 · ⌘E" hidden><svg class="icon" aria-hidden="true"><use href="#i-edit"/></svg><span>편집</span><kbd>⌘E</kbd></button>
+            <button class="open-btn" id="open-btn" type="button"><svg class="icon" aria-hidden="true"><use href="#i-external"/></svg><span id="open-label">기본 앱으로 열기</span><kbd>⌘↵</kbd></button>
+            <button class="reveal-btn" id="reveal-btn" type="button" title="Finder에서 보기 · ⌥⌘R" aria-label="Finder에서 보기"><svg class="icon" aria-hidden="true"><use href="#i-reveal"/></svg><span class="reveal-label">Finder에서 보기</span><kbd>⌥⌘R</kbd></button>
+          </div>
+          <button class="follow-btn" id="follow-btn" type="button"><svg class="icon" aria-hidden="true"><use href="#i-follow"/></svg><span id="follow-label">연결 따라가기</span><kbd>⇥</kbd></button>
+        </div>
+        <div class="mod-away" id="mod-away" hidden></div>
+        <div class="mod-reader" id="mod-reader" hidden></div>
+      </aside>
+    </div>
+
+    <div class="onboard" id="onboard" hidden>
+      <div class="onboard-card" role="region" aria-labelledby="onboard-title">
+        <div class="onboard-mark"><svg aria-hidden="true"><use href="#i-brand"/></svg></div>
+        <h1 class="onboard-title" id="onboard-title">자료를 연결해 Synapse를 시작하세요</h1>
+        <p class="onboard-sub">문서를 원래 자리에서 읽어 한 그래프로 이어요.<br>링크를 걸지 않아도 키워드·태그·언급으로 알아서 연결해요.</p>
+        <div class="onboard-actions">
+          <button class="add-card" type="button" data-act="add-folder"><span class="add-ic"><svg class="icon" aria-hidden="true"><use href="#i-folder"/></svg></span><span class="add-t">폴더 추가</span><span class="add-d">문서·PDF·워드·한글 파일</span></button>
+          <button class="add-card" type="button" data-act="add-obsidian"><span class="add-ic"><svg class="icon" aria-hidden="true"><use href="#i-obsidian"/></svg></span><span class="add-t">옵시디언 볼트</span><span class="add-d">링크·태그를 그대로 읽어요</span></button>
+          <button class="add-card" type="button" data-act="add-mcp"><span class="add-ic"><svg class="icon" aria-hidden="true"><use href="#i-cloud"/></svg></span><span class="add-t">Confluence·Jira</span><span class="add-d">Atlassian 계정으로 로그인</span></button>
+        </div>
+        <div class="onboard-draft" id="onboard-draft" role="status" hidden></div>
+        <button class="onboard-demo" type="button" data-act="demo">예시 자료로 둘러보기<svg class="icon" aria-hidden="true"><use href="#i-next"/></svg></button>
+        <p class="onboard-note"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg>자료와 색인은 이 Mac 안에만 저장돼요.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer" data-drag-region>
+    <div class="hints" id="hints">
+      <span class="hints-main" id="hints-main"><span class="hint"><kbd>↑↓</kbd>이동</span><span class="hint"><kbd>↵</kbd>읽기</span><span class="hint"><kbd>⇥</kbd>연결 따라가기</span><span class="hint"><kbd>⌘[</kbd>뒤로</span></span>
+      <span class="hint"><kbd>esc</kbd><span id="esc-hint">닫기</span></span>
+    </div>
+    <div class="hints hints-edit" id="hints-edit" hidden>
+      <span class="hint"><kbd>⌘S</kbd>저장</span>
+      <span class="hint"><kbd>esc</kbd>편집 취소</span>
+      <span class="hint"><kbd>⇥</kbd>들여쓰기</span>
+    </div>
+    <button class="status" id="status" type="button" title="자료와 설정 열기"><span class="status-dot" aria-hidden="true"></span><span id="status-text">불러오는 중…</span><span class="status-bar" id="status-bar" hidden><span class="status-bar-fill" id="status-bar-fill"></span></span></button>
+  </footer>
+
+  <div class="sheet-scrim" id="sheet-scrim" hidden>
+    <section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+      <header class="sheet-head">
+        <div class="sheet-head-t">
+          <h2 class="sheet-title" id="sheet-title">자료와 설정</h2>
+          <p class="sheet-sub" id="sheet-sub"></p>
+        </div>
+        <button class="icon-btn sm" type="button" data-act="close-sheet" title="닫기 · esc" aria-label="닫기"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+      </header>
+      <div class="sheet-body" id="sheet-body">
+        <div class="notices" id="notices" aria-live="polite"></div>
+        <h3 class="sheet-sec sheet-sec-first">연결한 자료</h3>
+        <div class="src-list" id="src-list" role="list" aria-label="연결한 자료"></div>
+        <div class="sheet-add" id="sheet-add">
+          <h3 class="sheet-sec">자료 추가</h3>
+          <div class="add-row">
+            <button class="add-btn" type="button" data-act="add-folder"><svg class="icon" aria-hidden="true"><use href="#i-folder"/></svg><span class="add-btn-t"><b>폴더 추가</b><small>문서·PDF·한글</small></span></button>
+            <button class="add-btn" type="button" data-act="add-obsidian"><svg class="icon" aria-hidden="true"><use href="#i-obsidian"/></svg><span class="add-btn-t"><b>옵시디언 볼트</b><small>노트(md)·PDF</small></span></button>
+            <button class="add-btn is-primary" type="button" data-act="add-mcp"><svg class="icon" aria-hidden="true"><use href="#i-cloud"/></svg><span class="add-btn-t"><b>Confluence·Jira</b><small>Atlassian (MCP 로그인)</small></span></button>
+          </div>
+          <div class="add-adv"><button class="link-btn" type="button" data-act="add-atlassian">API 토큰으로 연결</button><span>고급 · 로그인 대신 토큰을 쓸 때</span></div>
+        </div>
+        <div class="mcp-panel" id="mcp-panel" hidden aria-live="polite"></div>
+        <form class="atl-form" id="atl-form" hidden autocomplete="off" novalidate>
+          <h3 class="sheet-sec">API 토큰으로 Confluence·Jira 연결</h3>
+          <label class="field"><span class="field-l">사이트 주소</span><input class="input" id="atl-site" name="site" type="text" placeholder="your-team.atlassian.net" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
+          <label class="field"><span class="field-l">이메일</span><input class="input" id="atl-email" name="email" type="email" placeholder="name@example.com" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
+          <label class="field"><span class="field-l">API 토큰<button class="link-btn field-link" type="button" data-act="atl-help">API 토큰 만들기<svg class="icon" aria-hidden="true"><use href="#i-external"/></svg></button></span><input class="input" id="atl-token" name="token" type="password" placeholder="Atlassian 계정의 API 토큰" autocomplete="new-password"></label>
+          <details class="field-more" id="atl-more">
+            <summary>선택 사항 · 범위 좁히기</summary>
+            <label class="field"><span class="field-l">Confluence 스페이스 키 <em>쉼표로 구분</em></span><input class="input" id="atl-spaces" name="spaces" type="text" placeholder="ENG, PAY" autocomplete="off" autocapitalize="characters" spellcheck="false"></label>
+            <label class="field"><span class="field-l">Jira JQL</span><input class="input mono" id="atl-jql" name="jql" type="text" placeholder="project = PAY AND updated >= -90d" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
+            <p class="field-hint">비워 두면 내가 참여한 페이지와 최근 1년 동안 내가 맡거나 지켜본 이슈를 가져와요.</p>
+          </details>
+          <div class="form-error" id="atl-error" role="alert" hidden></div>
+          <div class="form-actions">
+            <button class="btn" type="button" data-act="atl-cancel">취소</button>
+            <button class="btn primary" id="atl-submit" type="submit">연결하기</button>
+          </div>
+        </form>
+
+        <h3 class="sheet-sec" id="brain-sec-h" hidden>사서</h3>
+        <div class="brain-settings" id="brain-settings" hidden></div>
+
+        <h3 class="sheet-sec">일반</h3>
+        <div class="set-group">
+          <div class="set-row">
+            <div class="set-t"><label class="set-l" id="pref-autohide-l" for="pref-autohide">다른 앱으로 전환하면 창 숨기기</label>
+              <p class="set-d" id="pref-autohide-d">꺼 두면 다른 앱을 써도 창이 그대로 남아요. 항상 위에 두려면 헤더의 고정 버튼을 누르세요.</p></div>
+            <button class="switch" id="pref-autohide" type="button" role="switch" data-act="pref-autohide" aria-checked="false" aria-labelledby="pref-autohide-l" aria-describedby="pref-autohide-d"><i></i></button>
+          </div>
+        </div>
+
+        <h3 class="sheet-sec">Claude·Codex에서 Synapse 쓰기(MCP)</h3>
+        <div class="set-group mcp-server" id="mcp-server">
+          <p class="set-intro">등록하면 Claude·Codex가 이 Mac의 노트를 검색하고 읽을 수 있어요. 옮기기·지우기는 정리함에 제안으로만 올리고, 승인해야 적용돼요. 사서 설정에서 ‘바로 정리’를 켜면 승인 없이 옮기고 Synapse 휴지통(30일 보관)으로 보내요.</p>
+          <div class="mcp-clients" id="mcp-clients" role="list" aria-label="MCP 클라이언트"></div>
+          <details class="field-more mcp-manual" id="mcp-manual">
+            <summary>직접 등록하기</summary>
+            <div class="mcp-manual-b" id="mcp-manual-b"></div>
+          </details>
+        </div>
+      </div>
+      <footer class="sheet-foot"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg>자료와 색인은 이 Mac 안에만 저장돼요. 토큰은 키체인에 보관해요.</footer>
+    </section>
+  </div>
+
+  <div class="why-pop" id="why-pop" role="dialog" aria-label="왜 여기 있나요" hidden></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</div>
+
+<script>
+// @inline data.js
+</script>
+<script>
+// @inline graph.js
+</script>
+<script>
+// @inline home.js
+</script>
+<script>
+// @inline queue.js
+</script>
+<script>
+// @inline week.js
+</script>
+<script>
+// @inline brainpanel.js
+</script>
+<script>
+// @inline menu.js
+</script>
+<script>
+// @inline markdown.js
+</script>
+<script>
+// @inline ai.js
+</script>
+<script>
+// @inline notes.js
+</script>
+<script>
+// @inline cluster.js
+</script>
+<script>
+// @inline homeurgent.js
+</script>
+<script>
+// @inline tickets.js
+</script>
+<script>
+// @inline workmap.js
+</script>
+<script>
+// @inline aipanel.js
+</script>
+<script>
+// @inline app.js
+</script>
+</body>
+</html>

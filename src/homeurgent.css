@@ -1,0 +1,32 @@
+/* v0.7 B: 홈 "급한 것" — 거르기 칩 · 프로젝트 칩 · 업무/개인 표시 · 더 보기 */
+.hu-head { display: flex; align-items: center; gap: 10px; }
+.hu-title { flex: 1 1 auto; min-width: 0; }
+.hu-seg { flex: none; display: inline-flex; gap: 4px; }
+.hu-chip {
+  display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 9px; border-radius: var(--radius-chip);
+  font-size: var(--fs-xs); font-weight: 500; letter-spacing: 0; text-transform: none; white-space: nowrap;
+  color: var(--text-2); background: var(--surface-2); border: 1px solid transparent; cursor: pointer;
+}
+.hu-chip:hover { background: var(--surface-3); color: var(--text-1); }
+/* 고른 칩은 색만이 아니라 굵은 테두리·굵은 글자로도 갈린다 */
+.hu-chip.is-on { color: var(--accent-text); background: var(--accent-soft); border-color: var(--accent-ring); box-shadow: inset 0 0 0 1px var(--accent-ring); font-weight: 700; }
+.hu-chip[aria-selected="true"] { outline: 2px solid var(--accent-ring); outline-offset: 1px; }
+.hu-chip .hu-n { color: var(--text-3); font-variant-numeric: tabular-nums; }
+.hu-chip.is-on .hu-n { color: inherit; opacity: .75; }
+.hu-chip kbd { margin-left: 4px; font-size: var(--fs-xs); color: var(--text-3); }
+.hu-projects { display: flex; flex-wrap: wrap; gap: 4px; padding: 2px 10px 6px; }
+.hu-more { padding: 2px 10px 0; }
+.hu-more .hu-chip { background: transparent; color: var(--accent-text); }
+.hu-more .hu-chip:hover { background: var(--accent-soft); }
+.hu-empty { margin: 4px 10px 2px; height: 28px; padding: 0 12px; font-size: var(--fs-sm); color: var(--text-2); background: var(--surface-1); border-color: var(--border); }
+.hu-empty .h-sep { margin: 0 4px; }
+
+/* 줄 안의 업무/개인 표시 */
+.hu-tag {
+  flex: none; height: 17px; padding: 0 6px; border-radius: 9px; border: 0; cursor: pointer;
+  font-size: 10.5px; font-weight: 600; line-height: 17px; letter-spacing: -0.01em; white-space: nowrap;
+}
+.hu-tag[data-scope="work"] { color: var(--accent-text); background: var(--accent-soft); }
+.hu-tag[data-scope="personal"] { color: var(--text-2); background: var(--surface-3); }
+button.hu-tag:hover { filter: brightness(1.2); }
+span.hu-tag { cursor: default; }

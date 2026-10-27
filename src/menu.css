@@ -1,0 +1,83 @@
+/* Synapse v0.6 — 우클릭 메뉴 · 확인/고르기 창 · 헤더 뒤로/앞으로 · 되돌리기 토스트 */
+
+/* ---------- 헤더 뒤로/앞으로 ---------- */
+.nav-btns { display: flex; align-items: center; gap: 2px; flex: none; margin-left: -4px; }
+.nav-btns .icon-btn { width: 28px; height: 32px; border-radius: 7px; }
+.nav-btns .icon-btn .icon { width: 18px; height: 18px; stroke-width: 1.7; }
+.nav-btns .icon-btn:disabled { opacity: .3; }
+/* 그래프 위의 옛 뒤로 버튼은 헤더로 올라갔으므로 CSS로만 숨긴다 */
+#back-btn { display: none; }
+@media (max-width: 720px) { .nav-btns { margin-left: 0; } }
+
+/* ---------- 우클릭 메뉴 ---------- */
+.sm-menu:focus { outline: none; }
+.sm-menu {
+  position: fixed; z-index: 300; min-width: 220px; max-width: 340px; overflow-y: auto;
+  padding: 5px; border-radius: 10px;
+  background: var(--surface-raised); border: 1px solid var(--border-strong); box-shadow: var(--shadow-pop);
+  font-size: var(--fs-md); outline: none;
+  -webkit-user-select: none; user-select: none;
+}
+.sm-item {
+  display: flex; align-items: center; gap: 8px; min-height: 28px; padding: 0 10px 0 6px; border-radius: 6px;
+  color: var(--text-1); white-space: nowrap;
+}
+.sm-ic { width: 16px; height: 16px; flex: none; color: var(--text-3); display: grid; place-items: center; }
+.sm-ic .icon { width: 15px; height: 15px; }
+.sm-lb { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.sm-sc { flex: none; margin-left: 18px; color: var(--text-3); font-size: var(--fs-sm); letter-spacing: .02em; font-variant-numeric: tabular-nums; }
+.sm-item.is-cur { background: var(--accent-soft); }
+.sm-item.is-cur .sm-ic { color: var(--accent-text); }
+.sm-item.is-disabled { color: var(--text-3); }
+.sm-item.is-danger { color: var(--danger); }
+.sm-item.is-danger .sm-ic, .sm-item.is-danger .sm-sc { color: var(--danger); opacity: .8; }
+.sm-item.is-danger.is-cur { background: var(--danger-soft); }
+.sm-sep { height: 1px; margin: 5px 6px; background: var(--border-strong); opacity: .7; }
+
+/* ---------- 확인 · 고르기 창 ---------- */
+.sm-scrim {
+  position: fixed; inset: 0; z-index: 310; display: flex; justify-content: center; align-items: flex-start; padding: 70px 16px 20px;
+  background: var(--scrim); opacity: 0; transition: opacity 140ms var(--ease-out);
+}
+.sm-scrim.visible { opacity: 1; }
+.sm-dlg {
+  width: min(460px, 100%); max-height: 100%; display: flex; flex-direction: column; gap: 10px; padding: 18px 18px 16px;
+  background: var(--surface-raised); border: 1px solid var(--border-strong); border-radius: 14px; box-shadow: var(--shadow-pop);
+  transform: translateY(-6px); transition: transform 160ms var(--ease-out); outline: none;
+}
+.sm-scrim.visible .sm-dlg { transform: none; }
+.sm-title { margin: 0; font-size: var(--fs-lg); font-weight: 600; letter-spacing: -0.005em; line-height: 1.4; word-break: keep-all; overflow-wrap: anywhere; }
+.sm-path { display: flex; align-items: center; gap: 6px; min-width: 0; color: var(--text-3); font-size: var(--fs-sm); }
+.sm-path span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sm-lines { margin: 0; padding: 0 0 0 18px; display: flex; flex-direction: column; gap: 4px; color: var(--text-2); font-size: var(--fs-md); line-height: 1.5; }
+.sm-lines .is-warn { color: var(--danger); }
+.sm-note { margin: 0; color: var(--text-3); font-size: var(--fs-sm); line-height: 1.5; }
+.sm-btns { display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px; }
+.sm-btn {
+  height: 32px; padding: 0 14px; border-radius: var(--radius-control); font-size: var(--fs-md);
+  background: var(--surface-2); border: 1px solid var(--border); color: var(--text-1);
+  transition: background-color 120ms var(--ease-out);
+}
+.sm-btn:hover { background: var(--surface-3); }
+.sm-btn.is-primary { background: var(--accent); border-color: transparent; color: var(--on-accent); font-weight: 600; }
+.sm-btn.is-primary.is-danger { background: var(--danger-strong); color: #fff; }
+.sm-btn:focus-visible { outline: 2px solid var(--accent-ring); outline-offset: 2px; }
+.sm-q {
+  height: 36px; padding: 0 12px; border-radius: 9px; font-size: var(--fs-lg);
+  background: var(--surface-2); border: 1px solid var(--border); color: var(--text-1); caret-color: var(--accent);
+  -webkit-user-select: text; user-select: text;
+}
+.sm-q:focus { border-color: var(--accent-ring); outline: none; }
+.sm-list { overflow-y: auto; max-height: min(46vh, 340px); display: flex; flex-direction: column; gap: 1px; scrollbar-width: thin; }
+.sm-opt { display: flex; align-items: baseline; gap: 10px; min-height: 30px; padding: 5px 10px; border-radius: 7px; cursor: default; }
+.sm-opt.is-cur { background: var(--accent-soft); }
+.sm-opt-l { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sm-opt-h { flex: none; color: var(--text-3); font-size: var(--fs-sm); }
+.sm-empty { padding: 18px 10px; text-align: center; color: var(--text-3); }
+.sm-foot { color: var(--text-3); font-size: var(--fs-xs); }
+.sm-foot kbd { padding: 0 4px; border: 1px solid var(--border); border-radius: 4px; }
+
+/* ---------- 되돌리기 토스트 ---------- */
+.toast.has-action { pointer-events: auto; display: flex; align-items: center; gap: 12px; }
+.toast .toast-act { flex: none; color: var(--accent-text); font-weight: 600; padding: 2px 6px; border-radius: 6px; }
+.toast .toast-act:hover { background: var(--accent-soft); }

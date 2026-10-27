@@ -1,0 +1,1 @@
+{"nodes":[{"id":"a1","type":"file","file":"1-Projects/결제-설계/_workspace/ADR-003_결제 재시도 정책.md","x":0,"y":0,"width":400,"height":300},{"id":"a2","type":"file","file":"2-Areas/결제/의사결정/ADR-001_PG사 선택.md","x":500,"y":0,"width":400,"height":300}],"edges":[{"id":"e1","fromNode":"a1","toNode":"a2"}]}

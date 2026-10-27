@@ -1,0 +1,90 @@
+/* v0.6 G: 티켓 상태 색 · 상태 칩 · 묶음 요약 · 끝난 티켓 토글 · 상태 범례 */
+:root {
+  --st-todo: #9aa0aa; --st-doing: #5aa6f2; --st-blocked: #f0a04b; --st-done: #6fc47a; --st-dropped: #8a8f98;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --st-todo: #7d838d; --st-doing: #2a7fdc; --st-blocked: #d9801f; --st-done: #3f9e4d; --st-dropped: #9a9fa7;
+  }
+}
+
+/* 상태 칩 (목록 행 · 리더 머리 · 묶음 요약) */
+.st-chip {
+  flex: none; display: inline-flex; align-items: center; height: 17px; padding: 0 7px; border-radius: 9px;
+  font-size: 10.5px; font-weight: 600; letter-spacing: -0.01em; line-height: 1; white-space: nowrap;
+  color: var(--st-c, var(--text-2)); background: color-mix(in srgb, var(--st-c, var(--text-2)) 16%, transparent);
+}
+.st-chip.st-todo { --st-c: var(--st-todo); }
+.st-chip.st-doing { --st-c: var(--st-doing); }
+.st-chip.st-blocked { --st-c: var(--st-blocked); }
+.st-chip.st-done { --st-c: var(--st-done); }
+.st-chip.st-dropped { --st-c: var(--st-dropped); }
+.item .st-chip { margin-left: -2px; }
+.meta .st-chip { height: 18px; }
+
+/* 티켓 상태 범례 (그래프 왼쪽 위, 제목 아래) */
+.g-status { display: flex; flex-wrap: wrap; gap: 2px 10px; margin: 5px 0 0 38px; font-size: var(--fs-xs); color: var(--text-3); pointer-events: none; }
+.g-status[hidden] { display: none; }
+.st-key { display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; }
+.st-key i { width: 8px; height: 8px; border-radius: 2.5px; background: var(--st-c, var(--text-3)); flex: none; }
+.st-key.st-todo { --st-c: var(--st-todo); }
+.st-key.st-doing { --st-c: var(--st-doing); }
+.st-key.st-blocked { --st-c: var(--st-blocked); }
+.st-key.st-done { --st-c: var(--st-done); }
+.st-key.st-done i { opacity: .7; }
+.st-key.st-dropped { --st-c: var(--st-dropped); }
+.st-key.st-mine i { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+/* 끝난 티켓 토글 (보관본 토글 위에 쌓인다) */
+.g-done {
+  right: 10px; bottom: 52px; display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px 0 8px; border-radius: 8px;
+  background: var(--overlay-bg); border: 1px solid var(--border); font-size: var(--fs-xs); color: var(--text-2);
+  -webkit-backdrop-filter: blur(12px) saturate(1.2); backdrop-filter: blur(12px) saturate(1.2);
+}
+.g-done .icon { width: 13px; height: 13px; }
+/* 좁은 창: 범례가 오른쪽 아래 토글(약 280px)과 겹치지 않게 폭을 줄인다 */
+@container (max-width: 760px) { .graph-panel .g-legend { max-width: calc(100% - 300px); } }
+.g-done:hover { color: var(--text-1); background: var(--surface-raised); }
+.g-done:not([hidden]) ~ .g-archive:not([hidden]) { bottom: 82px; }
+
+/* 묶음 요약 (리더) */
+.cs-stats { display: flex; gap: 8px; margin: 14px 0 10px; }
+.cs-stat { flex: 1 1 0; min-width: 0; padding: 9px 10px; border-radius: 10px; background: var(--surface-1); border: 1px solid var(--border); }
+.cs-stat b { display: block; font-size: 20px; font-weight: 650; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; color: var(--text-1); }
+.cs-stat span { display: block; margin-top: 1px; font-size: var(--fs-xs); color: var(--text-3); white-space: nowrap; }
+.cs-stat.is-open b { color: var(--st-doing); }
+.cs-mix { display: flex; height: 6px; border-radius: 3px; overflow: hidden; gap: 1px; margin: 4px 0 6px; background: var(--surface-2); }
+.cs-mix i { display: block; min-width: 2px; background: var(--st-c); }
+.cs-mix i.st-todo { --st-c: var(--st-todo); }
+.cs-mix i.st-doing { --st-c: var(--st-doing); }
+.cs-mix i.st-blocked { --st-c: var(--st-blocked); }
+.cs-mix i.st-done { --st-c: var(--st-done); opacity: .6; }
+.cs-mix i.st-dropped { --st-c: var(--st-dropped); opacity: .45; }
+.cs-mix-l { display: flex; flex-wrap: wrap; gap: 2px 12px; margin-bottom: 4px; font-size: var(--fs-xs); color: var(--text-3); }
+.cs-note { margin: 6px 0 0; font-size: var(--fs-sm); color: var(--text-3); line-height: 1.5; }
+.cs-expand { width: 100%; justify-content: center; margin: 14px 0 6px; height: 36px; }
+.cs-expand .icon { width: 15px; height: 15px; }
+.cs-row { gap: 8px; }
+.cs-row .st-chip { margin-left: 0; }
+.reader.is-cluster .reader-body { display: none; }
+
+/* 상태 범례의 모양 아이콘 · 상한 안내 · 지도 안내 */
+.st-key svg { flex: none; color: var(--st-c, var(--text-3)); }
+.st-note { color: var(--text-3); }
+.cs-guide { list-style: none; margin: 12px 0 8px; padding: 0; display: grid; gap: 9px; }
+.cs-guide li { display: flex; align-items: center; gap: 10px; font-size: var(--fs-md); color: var(--text-2); line-height: 1.4; }
+.cs-guide b { flex: none; min-width: 52px; text-align: center; font-weight: 700; color: var(--text-1); }
+.cs-g-num { font-size: 18px; font-variant-numeric: tabular-nums; }
+.cs-g-badge { display: inline-flex; justify-content: center; align-items: center; min-width: 22px !important; width: 22px; height: 16px; margin: 0 15px; border-radius: 8px; background: var(--st-doing); color: #fff !important; font-size: 10px; }
+.cs-g-glow { height: 22px; margin: 0 15px; width: 22px; min-width: 0 !important; border-radius: 50%; background: radial-gradient(circle, var(--topic-g1) 0 35%, transparent 72%); }
+.cs-g-key { padding: 2px 6px; border-radius: 6px; background: var(--surface-2); font-size: var(--fs-sm); }
+
+/* v0.7 E: 끝난 티켓 요약 노드(알약) 설명 · 끝난 티켓 목록 · 목록 잘림 안내 */
+.cs-g-pill { display: inline-flex; align-items: center; gap: 5px; min-width: 0 !important; padding: 2px 9px 2px 7px; border-radius: 999px; border: 1px solid var(--st-done); background: color-mix(in srgb, var(--st-done) 16%, transparent); font-size: var(--fs-sm); white-space: nowrap; color: var(--st-done); }
+.cs-g-pill svg { color: var(--st-done); }
+.topic-chip.st-done { --st-c: var(--st-done); }
+.topic-chip.st-dropped { --st-c: var(--st-dropped); }
+.topic-chip[class*="st-"] svg { color: var(--st-c); margin-right: 5px; vertical-align: -2px; }
+.done-list .cs-row .k { flex: none; font-size: var(--fs-xs); color: var(--text-3); font-variant-numeric: tabular-nums; }
+.list-trunc { margin: 8px 12px 14px; padding: 8px 10px; border-radius: 8px; background: var(--surface-2); color: var(--text-3); font-size: var(--fs-sm); line-height: 1.45; text-align: center; }
+.reader .list-trunc { margin: 10px 0 4px; }
