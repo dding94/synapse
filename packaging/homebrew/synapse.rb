@@ -1,9 +1,9 @@
 # Homebrew formula 틀 — dding94/homebrew-tap 저장소의 Formula/synapse.rb로 쓴다.
-# 릴리스마다 url의 버전과 sha256(GitHub가 만든 태그 tar.gz의 sha256)을 바꾼다.
+# 릴리스마다 tools/package.sh가 만든 dist/synapse-<버전>.tar.gz를 GitHub 릴리스에 올리고, url의 버전과 그 파일의 sha256을 바꾼다.
 class Synapse < Formula
   desc "Personal search and work-tidying app for macOS (Korean UI)"
   homepage "https://github.com/dding94/synapse"
-  url "https://github.com/dding94/synapse/archive/refs/tags/v__VERSION__.tar.gz"
+  url "https://github.com/dding94/synapse/releases/download/v__VERSION__/synapse-__VERSION__.tar.gz"
   sha256 "__SHA256__"
   license "MIT"
   head "https://github.com/dding94/synapse.git", branch: "main"
